@@ -1,0 +1,453 @@
+/* Fishing Frenzy — a rustic, field-guide visual system.
+   Warm parchment paper, forest greens, tannin-stained water, worn leather. */
+
+:root {
+  --paper: #f6f0e2;
+  --paper-2: #efe7d5;
+  --card: #fffdf7;
+  --ink: #23281f;
+  --ink-2: #4d5445;
+  --ink-3: #7b8271;
+  --line: #d9cfb8;
+  --line-2: #c3b699;
+
+  --forest: #2f4530;
+  --forest-2: #3f5a3c;
+  --moss: #6d7f4f;
+  --water: #2c4a52;
+  --water-2: #3d626c;
+  --rust: #a0522d;
+  --rust-2: #8d4525;
+  --gold: #b98b38;
+
+  --radius: 10px;
+  --shadow: 0 1px 2px rgba(35, 40, 31, 0.06), 0 4px 14px rgba(35, 40, 31, 0.07);
+  --shadow-lg: 0 2px 6px rgba(35, 40, 31, 0.08), 0 16px 40px rgba(35, 40, 31, 0.14);
+
+  --serif: 'Iowan Old Style', 'Palatino Linotype', Palatino, 'Book Antiqua', Georgia, serif;
+  --sans: ui-sans-serif, system-ui, -apple-system, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --paper: #1b1f1a;
+    --paper-2: #222720;
+    --card: #252b23;
+    --ink: #ece5d5;
+    --ink-2: #bdb8a6;
+    --ink-3: #8d8d7c;
+    --line: #3a4136;
+    --line-2: #4b5344;
+    --forest: #8fb388;
+    --forest-2: #a3c39b;
+    --water: #7fb0bd;
+    --water-2: #9ac6d1;
+    --rust: #d4835c;
+    --rust-2: #e09b78;
+    --gold: #d9ae63;
+    --shadow: 0 1px 2px rgba(0, 0, 0, 0.3), 0 4px 14px rgba(0, 0, 0, 0.35);
+    --shadow-lg: 0 2px 6px rgba(0, 0, 0, 0.35), 0 16px 40px rgba(0, 0, 0, 0.5);
+  }
+}
+
+* { box-sizing: border-box; }
+
+html, body, #root { height: 100%; }
+
+body {
+  margin: 0;
+  background-color: var(--paper);
+  /* Faint paper grain so large flat areas do not read as flat screen. */
+  background-image:
+    radial-gradient(circle at 20% 30%, rgba(160, 82, 45, 0.035), transparent 55%),
+    radial-gradient(circle at 80% 70%, rgba(47, 69, 48, 0.04), transparent 55%);
+  color: var(--ink);
+  font-family: var(--sans);
+  font-size: 16px;
+  line-height: 1.55;
+  -webkit-font-smoothing: antialiased;
+}
+
+a { color: inherit; text-decoration: none; }
+
+h1, h2, h3, h4 {
+  font-family: var(--serif);
+  font-weight: 600;
+  line-height: 1.15;
+  margin: 0;
+  letter-spacing: -0.01em;
+}
+
+/* ---------- Layout shell ---------- */
+
+.app { display: flex; flex-direction: column; min-height: 100%; }
+
+.masthead {
+  position: sticky;
+  top: 0;
+  z-index: 40;
+  background: linear-gradient(180deg, var(--forest) 0%, #26381f 100%);
+  color: #f2ecdb;
+  border-bottom: 3px solid var(--gold);
+  box-shadow: var(--shadow);
+}
+@media (prefers-color-scheme: dark) {
+  .masthead { background: linear-gradient(180deg, #202a1d 0%, #171d15 100%); }
+}
+
+.masthead-inner {
+  max-width: 1240px;
+  margin: 0 auto;
+  padding: 0.7rem 1.25rem;
+  display: flex;
+  align-items: center;
+  gap: 1.25rem;
+  flex-wrap: wrap;
+}
+
+.brand { display: flex; align-items: center; gap: 0.6rem; }
+.brand-mark { flex: none; opacity: 0.95; }
+.brand-text { display: flex; flex-direction: column; line-height: 1.05; }
+.brand-name {
+  font-family: var(--serif);
+  font-size: 1.4rem;
+  font-weight: 700;
+  letter-spacing: 0.01em;
+  color: #f7f2e3;
+}
+.brand-sub {
+  font-size: 0.68rem;
+  text-transform: uppercase;
+  letter-spacing: 0.14em;
+  color: rgba(242, 236, 219, 0.62);
+}
+
+.nav { display: flex; gap: 0.35rem; margin-left: auto; }
+.nav a {
+  padding: 0.42rem 0.85rem;
+  border-radius: 999px;
+  font-size: 0.9rem;
+  font-weight: 600;
+  color: rgba(242, 236, 219, 0.78);
+  border: 1px solid transparent;
+  transition: background 0.15s, color 0.15s, border-color 0.15s;
+}
+.nav a:hover { background: rgba(255, 255, 255, 0.09); color: #fff; }
+.nav a.active {
+  background: rgba(255, 255, 255, 0.14);
+  color: #fff;
+  border-color: rgba(255, 255, 255, 0.22);
+}
+
+.main { flex: 1; width: 100%; max-width: 1240px; margin: 0 auto; padding: 1.5rem 1.25rem 4rem; }
+
+.footer {
+  border-top: 1px solid var(--line);
+  padding: 1.5rem 1.25rem 2.5rem;
+  color: var(--ink-3);
+  font-size: 0.82rem;
+  text-align: center;
+}
+
+/* ---------- Generic pieces ---------- */
+
+.page-head { margin-bottom: 1.25rem; }
+.page-head h1 { font-size: clamp(1.7rem, 3.4vw, 2.5rem); }
+.page-head p { color: var(--ink-2); margin: 0.4rem 0 0; max-width: 62ch; }
+
+.crumb {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: var(--ink-3);
+  margin-bottom: 0.9rem;
+}
+.crumb:hover { color: var(--rust); }
+
+.card {
+  background: var(--card);
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  box-shadow: var(--shadow);
+}
+
+.tag {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.3rem;
+  padding: 0.16rem 0.55rem;
+  border-radius: 999px;
+  font-size: 0.72rem;
+  font-weight: 700;
+  letter-spacing: 0.02em;
+  border: 1px solid var(--line-2);
+  color: var(--ink-2);
+  background: var(--paper-2);
+  white-space: nowrap;
+}
+.tag-abundant { border-color: var(--forest-2); color: var(--forest); background: rgba(63, 90, 60, 0.09); }
+.tag-state { border-color: var(--water-2); color: var(--water); background: rgba(61, 98, 108, 0.09); }
+
+.spinner { padding: 3rem 0; text-align: center; color: var(--ink-3); }
+.error {
+  padding: 1rem 1.15rem;
+  border-radius: var(--radius);
+  border: 1px solid var(--rust);
+  background: rgba(160, 82, 45, 0.08);
+  color: var(--rust-2);
+}
+.empty { padding: 2.5rem 1rem; text-align: center; color: var(--ink-3); }
+
+/* ---------- Controls ---------- */
+
+.controls {
+  display: flex;
+  gap: 0.7rem;
+  flex-wrap: wrap;
+  align-items: center;
+  margin-bottom: 1.1rem;
+}
+
+.field {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  background: var(--card);
+  border: 1px solid var(--line-2);
+  border-radius: 999px;
+  padding: 0.45rem 0.9rem;
+  box-shadow: var(--shadow);
+}
+.field:focus-within { border-color: var(--forest-2); box-shadow: 0 0 0 3px rgba(63, 90, 60, 0.14); }
+.field input, .field select {
+  border: 0;
+  background: transparent;
+  color: var(--ink);
+  font: inherit;
+  font-size: 0.92rem;
+  outline: none;
+  min-width: 0;
+}
+.field input { width: min(38vw, 260px); }
+.field select { cursor: pointer; }
+.field svg { flex: none; color: var(--ink-3); }
+
+.count { margin-left: auto; color: var(--ink-3); font-size: 0.86rem; font-weight: 600; }
+
+.toggle { display: inline-flex; border: 1px solid var(--line-2); border-radius: 999px; overflow: hidden; background: var(--card); box-shadow: var(--shadow); }
+.toggle button {
+  border: 0;
+  background: transparent;
+  font: inherit;
+  font-size: 0.86rem;
+  font-weight: 700;
+  color: var(--ink-2);
+  padding: 0.45rem 0.95rem;
+  cursor: pointer;
+}
+.toggle button[aria-pressed='true'] { background: var(--forest); color: #f4efdf; }
+
+/* ---------- Map ---------- */
+
+.map-wrap {
+  position: relative;
+  height: min(62vh, 560px);
+  border-radius: var(--radius);
+  overflow: hidden;
+  border: 1px solid var(--line-2);
+  box-shadow: var(--shadow-lg);
+  margin-bottom: 1.25rem;
+}
+.map-wrap .mapboxgl-map { font: inherit; }
+.map-missing {
+  height: 100%;
+  display: grid;
+  place-items: center;
+  text-align: center;
+  padding: 2rem;
+  background: var(--paper-2);
+  color: var(--ink-2);
+}
+.map-missing code {
+  background: var(--card);
+  border: 1px solid var(--line);
+  border-radius: 5px;
+  padding: 0.1rem 0.35rem;
+  font-size: 0.85em;
+}
+
+.map-pin {
+  width: 14px;
+  height: 14px;
+  border-radius: 50%;
+  background: var(--rust);
+  border: 2.5px solid #fdfaf1;
+  box-shadow: 0 1px 5px rgba(0, 0, 0, 0.45);
+  cursor: pointer;
+  transition: transform 0.12s;
+}
+.map-pin:hover { transform: scale(1.45); }
+
+.mapboxgl-popup-content {
+  font-family: var(--sans);
+  border-radius: 8px;
+  padding: 0.7rem 0.85rem;
+  box-shadow: var(--shadow-lg);
+}
+.popup-name { font-family: var(--serif); font-weight: 700; font-size: 1rem; color: #23281f; }
+.popup-meta { font-size: 0.78rem; color: #5c6353; margin-top: 0.1rem; }
+.popup-link { display: inline-block; margin-top: 0.45rem; font-size: 0.8rem; font-weight: 700; color: #a0522d; }
+
+/* ---------- Lake + species grids ---------- */
+
+.grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(268px, 1fr));
+  gap: 0.9rem;
+}
+
+.lake-card {
+  display: flex;
+  flex-direction: column;
+  padding: 1rem 1.05rem;
+  transition: transform 0.14s, box-shadow 0.14s, border-color 0.14s;
+}
+.lake-card:hover { transform: translateY(-2px); box-shadow: var(--shadow-lg); border-color: var(--line-2); }
+.lake-card h3 { font-size: 1.12rem; margin-bottom: 0.15rem; }
+.lake-card .where { font-size: 0.82rem; color: var(--ink-3); font-weight: 600; }
+.lake-card .blurb {
+  font-size: 0.87rem;
+  color: var(--ink-2);
+  margin: 0.55rem 0 0.8rem;
+  display: -webkit-box;
+  -webkit-line-clamp: 3;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+.lake-card .fish-row {
+  margin-top: auto;
+  display: flex;
+  align-items: center;
+  gap: 0.3rem;
+  padding-top: 0.7rem;
+  border-top: 1px dashed var(--line);
+  color: var(--ink-3);
+  font-size: 0.8rem;
+  font-weight: 700;
+}
+
+.species-card {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  padding: 1rem 1.05rem 1.1rem;
+  transition: transform 0.14s, box-shadow 0.14s;
+}
+.species-card:hover { transform: translateY(-2px); box-shadow: var(--shadow-lg); }
+.species-card .art { align-self: center; margin: 0.2rem 0 0.5rem; }
+.species-card h3 { font-size: 1.05rem; }
+.species-card .sci { font-style: italic; font-size: 0.8rem; color: var(--ink-3); }
+.species-card .n { margin-top: 0.6rem; font-size: 0.8rem; font-weight: 700; color: var(--rust); }
+
+/* ---------- Detail pages ---------- */
+
+.detail-head {
+  display: flex;
+  gap: 1.5rem;
+  align-items: flex-start;
+  flex-wrap: wrap;
+  padding: 1.35rem 1.5rem;
+  margin-bottom: 1.25rem;
+}
+.detail-head h1 { font-size: clamp(1.6rem, 3.6vw, 2.4rem); }
+.detail-head .sub { color: var(--ink-2); margin-top: 0.3rem; font-weight: 600; }
+.detail-head .lede { color: var(--ink-2); margin-top: 0.7rem; max-width: 68ch; }
+
+.stats {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem 1.6rem;
+  margin-top: 1rem;
+  padding-top: 0.9rem;
+  border-top: 1px dashed var(--line);
+}
+.stat .k {
+  font-size: 0.68rem;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  color: var(--ink-3);
+  font-weight: 700;
+}
+.stat .v { font-family: var(--serif); font-size: 1.12rem; font-weight: 700; }
+
+.two-col { display: grid; grid-template-columns: minmax(0, 1.55fr) minmax(0, 1fr); gap: 1.25rem; align-items: start; }
+@media (max-width: 900px) { .two-col { grid-template-columns: 1fr; } }
+
+.panel { padding: 1.15rem 1.3rem; }
+.panel + .panel { margin-top: 1.1rem; }
+.panel h2 {
+  font-size: 1.15rem;
+  padding-bottom: 0.55rem;
+  margin-bottom: 0.85rem;
+  border-bottom: 2px solid var(--line);
+}
+
+.info-row + .info-row { margin-top: 0.85rem; padding-top: 0.85rem; border-top: 1px dashed var(--line); }
+.info-row .k {
+  font-size: 0.68rem;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  color: var(--rust);
+  font-weight: 800;
+  margin-bottom: 0.2rem;
+}
+.info-row .v { color: var(--ink-2); font-size: 0.93rem; }
+
+.facilities { display: flex; flex-wrap: wrap; gap: 0.4rem; margin-top: 0.3rem; }
+
+/* Fish list on a lake page */
+.fish-list { display: flex; flex-direction: column; gap: 0.5rem; }
+.fish-item {
+  display: flex;
+  align-items: center;
+  gap: 0.85rem;
+  padding: 0.6rem 0.75rem;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  background: var(--paper-2);
+  transition: background 0.14s, border-color 0.14s, transform 0.14s;
+}
+.fish-item:hover { background: var(--card); border-color: var(--line-2); transform: translateX(3px); }
+.fish-item .art { flex: none; }
+.fish-item .nm { font-family: var(--serif); font-weight: 700; font-size: 1.02rem; }
+.fish-item .sci { font-style: italic; font-size: 0.76rem; color: var(--ink-3); }
+.fish-item .go { margin-left: auto; color: var(--ink-3); flex: none; }
+
+/* Lake list on a species page */
+.lake-list { display: flex; flex-direction: column; gap: 0.4rem; }
+.lake-row {
+  display: flex;
+  align-items: baseline;
+  gap: 0.6rem;
+  padding: 0.55rem 0.7rem;
+  border-radius: 7px;
+  border: 1px solid transparent;
+  transition: background 0.13s, border-color 0.13s;
+}
+.lake-row:hover { background: var(--paper-2); border-color: var(--line); }
+.lake-row .nm { font-weight: 700; min-width: 0; }
+.lake-row .st { font-size: 0.8rem; color: var(--ink-3); white-space: nowrap; }
+.lake-row .ab { margin-left: auto; }
+
+.state-group { margin-bottom: 1.4rem; }
+.state-group h3 {
+  font-size: 0.78rem;
+  text-transform: uppercase;
+  letter-spacing: 0.12em;
+  color: var(--rust);
+  border-bottom: 1px solid var(--line);
+  padding-bottom: 0.3rem;
+  margin-bottom: 0.5rem;
+}
