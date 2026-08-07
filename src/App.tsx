@@ -20,12 +20,12 @@ function Guide() {
               <BrandMark className="brand-mark" />
               <span className="brand-text">
                 <span className="brand-name">Little Lake Fishing</span>
-                <span className="brand-sub">Lakes &amp; species of the USA</span>
+                <span className="brand-sub">Waters &amp; species of the USA</span>
               </span>
             </Link>
             <nav className="nav">
               <NavLink to="/" end>
-                Lakes
+                Waters
               </NavLink>
               <NavLink to="/species">Species</NavLink>
               <button className="nav-signout" onClick={signOut} title={email ?? undefined}>
@@ -38,14 +38,14 @@ function Guide() {
         <main className="main">
           <Routes>
             <Route path="/" element={<LakesPage />} />
-            <Route path="/lakes/:slug" element={<LakeDetailPage />} />
+            <Route path="/waters/:slug" element={<LakeDetailPage />} />
             <Route path="/species" element={<SpeciesPage />} />
             <Route path="/species/:slug" element={<SpeciesDetailPage />} />
             <Route
               path="*"
               element={
                 <div className="empty">
-                  That page is not on the map. <Link to="/">Back to the lakes</Link>.
+                  That page is not on the map. <Link to="/">Back to the waters</Link>.
                 </div>
               }
             />

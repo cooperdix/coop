@@ -4,6 +4,8 @@ export type Lake = {
   name: string;
   state: string;
   state_code: string;
+  /** Lake, River, Tailwater, Bay, Sound, Estuary, Reservoir, Creek, Lagoon, Pond… */
+  water_type: string;
   county: string | null;
   latitude: number;
   longitude: number;

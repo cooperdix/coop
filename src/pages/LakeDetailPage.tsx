@@ -9,7 +9,7 @@ export function LakeDetailPage() {
   const { slug } = useParams();
   const { data, loading, error } = useLake(slug);
 
-  if (loading) return <div className="spinner">Loading lake…</div>;
+  if (loading) return <div className="spinner">Loading water…</div>;
   if (error) return <div className="error">{error}</div>;
   if (!data) return null;
 
@@ -34,14 +34,14 @@ export function LakeDetailPage() {
   return (
     <>
       <Link to="/" className="crumb">
-        <ChevronLeft size={14} /> All lakes
+        <ChevronLeft size={14} /> All waters
       </Link>
 
       <div className="card detail-head">
         <div style={{ flex: '1 1 340px' }}>
           <h1>{lake.name}</h1>
           <div className="sub">
-            {lake.county ? `${lake.county} County, ` : ''}
+            {lake.water_type} &middot; {lake.county ? `${lake.county} County, ` : ''}
             {lake.state}
           </div>
           {lake.description && <p className="lede">{lake.description}</p>}

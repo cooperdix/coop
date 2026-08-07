@@ -31,7 +31,7 @@ export function SpeciesPage() {
       <div className="page-head">
         <h1>Fish Species</h1>
         <p>
-          Know what you want to catch? Start here. Every species lists the lakes in this guide
+          Know what you want to catch? Start here. Every species lists the waters in this guide
           where you can find it, plus how and when to target it.
         </p>
       </div>
@@ -78,8 +78,8 @@ export function SpeciesPage() {
             {s.scientific_name && <div className="sci">{s.scientific_name}</div>}
             <div className="n">
               {s.lakeCount > 0
-                ? `${s.lakeCount} lake${s.lakeCount === 1 ? '' : 's'} in this guide`
-                : 'No catalogued lakes yet'}
+                ? `${s.lakeCount} water${s.lakeCount === 1 ? '' : 's'} in this guide`
+                : 'No catalogued waters yet'}
             </div>
           </Link>
         ))}

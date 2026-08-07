@@ -6,8 +6,8 @@ import type { Feature, Point } from 'geojson';
 import type { Lake } from '../lib/types';
 
 type Props = {
-  lakes: (Lake & { fishCount?: number })[];
-  /** Called with a lake slug when a pin is clicked. */
+  waters: (Lake & { fishCount?: number })[];
+  /** Called with a water slug when a pin is clicked. */
   onSelect: (slug: string) => void;
 };
 
@@ -34,7 +34,7 @@ const US_MAX_BOUNDS: [[number, number], [number, number]] = [
 /** Zoomed out past this the US stops filling the frame, so don't allow it. */
 const MIN_ZOOM = 2.2;
 
-export function MapView({ lakes, onSelect }: Props) {
+export function MapView({ waters, onSelect }: Props) {
   const container = useRef<HTMLDivElement | null>(null);
   const map = useRef<mapboxgl.Map | null>(null);
   // Kept in a ref so the click handler always sees the current callback.
@@ -172,7 +172,7 @@ export function MapView({ lakes, onSelect }: Props) {
       if (!src) return;
       src.setData({
         type: 'FeatureCollection',
-        features: lakes.map((l) => ({
+        features: waters.map((l) => ({
           type: 'Feature',
           geometry: { type: 'Point', coordinates: [l.longitude, l.latitude] },
           properties: {
@@ -187,7 +187,7 @@ export function MapView({ lakes, onSelect }: Props) {
 
     if (m.isStyleLoaded()) push();
     else m.once('load', push);
-  }, [lakes]);
+  }, [waters]);
 
   if (!MAPBOX_TOKEN) {
     return (

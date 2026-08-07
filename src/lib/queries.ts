@@ -29,14 +29,14 @@ function useAsync<T>(run: () => Promise<T>, deps: unknown[]): State<T> {
 export function useLakes() {
   return useAsync(async () => {
     const { data, error } = await supabase
-      .from('lakes')
-      .select('*, lake_fish(count)')
+      .from('waters')
+      .select('*, water_fish(count)')
       .order('name');
     if (error) throw error;
 
     return (data ?? []).map((row) => {
-      const { lake_fish, ...lake } = row as Lake & { lake_fish: { count: number }[] };
-      return { ...lake, fishCount: lake_fish?.[0]?.count ?? 0 };
+      const { water_fish, ...lake } = row as Lake & { water_fish: { count: number }[] };
+      return { ...lake, fishCount: water_fish?.[0]?.count ?? 0 };
     }) as (Lake & { fishCount: number })[];
   }, []);
 }
@@ -47,7 +47,7 @@ export function useLake(slug: string | undefined) {
     if (!slug) throw new Error('No lake specified.');
 
     const { data: lake, error: lakeErr } = await supabase
-      .from('lakes')
+      .from('waters')
       .select('*')
       .eq('slug', slug)
       .maybeSingle();
@@ -55,9 +55,9 @@ export function useLake(slug: string | undefined) {
     if (!lake) throw new Error('That lake is not in the guide.');
 
     const { data: rows, error: fishErr } = await supabase
-      .from('lake_fish')
+      .from('water_fish')
       .select('abundance, is_stocked, fish_species(*)')
-      .eq('lake_id', (lake as Lake).id);
+      .eq('water_id', (lake as Lake).id);
     if (fishErr) throw fishErr;
 
     const species = (rows ?? []).map((r) => {
@@ -85,13 +85,13 @@ export function useSpeciesList() {
   return useAsync(async () => {
     const { data, error } = await supabase
       .from('fish_species')
-      .select('*, lake_fish(count)')
+      .select('*, water_fish(count)')
       .order('common_name');
     if (error) throw error;
 
     return (data ?? []).map((row) => {
-      const { lake_fish, ...species } = row as Species & { lake_fish: { count: number }[] };
-      return { ...species, lakeCount: lake_fish?.[0]?.count ?? 0 };
+      const { water_fish, ...species } = row as Species & { water_fish: { count: number }[] };
+      return { ...species, lakeCount: water_fish?.[0]?.count ?? 0 };
     }) as (Species & { lakeCount: number })[];
   }, []);
 }
@@ -110,14 +110,14 @@ export function useSpecies(slug: string | undefined) {
     if (!species) throw new Error('That species is not in the guide.');
 
     const { data: rows, error: lakeErr } = await supabase
-      .from('lake_fish')
-      .select('abundance, lakes(*)')
+      .from('water_fish')
+      .select('abundance, waters(*)')
       .eq('species_id', (species as Species).id);
     if (lakeErr) throw lakeErr;
 
     const lakes = (rows ?? []).map((r) => {
-      const row = r as unknown as { abundance: string | null; lakes: Lake };
-      return { ...row.lakes, abundance: row.abundance };
+      const row = r as unknown as { abundance: string | null; waters: Lake };
+      return { ...row.waters, abundance: row.abundance };
     }) as SpeciesLake[];
 
     lakes.sort((a, b) => a.state.localeCompare(b.state) || a.name.localeCompare(b.name));

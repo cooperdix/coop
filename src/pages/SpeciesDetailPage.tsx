@@ -69,14 +69,14 @@ export function SpeciesDetailPage() {
             <h2>Where to catch it</h2>
             {lakes.length === 0 ? (
               <p style={{ color: 'var(--ink-3)', fontSize: '0.9rem' }}>
-                No lake in this guide currently lists this species. The catalogue covers notable
-                lakes rather than every water in the country, so this fish may well be present
+                No water in this guide currently lists this species. The catalogue covers notable
+                waters rather than every water in the country, so this fish may well be present
                 elsewhere in its range.
               </p>
             ) : (
               <>
                 <p style={{ marginTop: '-0.4rem', color: 'var(--ink-2)', fontSize: '0.9rem' }}>
-                  Found in <strong>{lakes.length}</strong> lake{lakes.length === 1 ? '' : 's'}{' '}
+                  Found in <strong>{lakes.length}</strong> water{lakes.length === 1 ? '' : 's'}{' '}
                   across <strong>{Object.keys(byState).length}</strong> state
                   {Object.keys(byState).length === 1 ? '' : 's'}.
                 </p>
@@ -85,7 +85,7 @@ export function SpeciesDetailPage() {
                     <h3>{state}</h3>
                     <div className="lake-list">
                       {group.map((l) => (
-                        <Link key={l.slug} to={`/lakes/${l.slug}`} className="lake-row">
+                        <Link key={l.slug} to={`/waters/${l.slug}`} className="lake-row">
                           <span className="nm">{l.name}</span>
                           {l.county && <span className="st">{l.county} County</span>}
                           {l.abundance === 'Abundant' && (
