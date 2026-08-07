@@ -18,10 +18,24 @@ export function LakesPage() {
     return [...seen.entries()].sort((a, b) => a[1].localeCompare(b[1]));
   }, [data]);
 
-  const types = useMemo(
-    () => [...new Set((data ?? []).map((l) => l.water_type))].sort(),
-    [data],
-  );
+  /**
+   * Every kind of water the guide can hold, whether or not anything is
+   * catalogued under it yet. Listing them all keeps the filter honest about
+   * the guide's scope rather than only about what happens to be seeded.
+   */
+  const CANONICAL_TYPES = [
+    'Lake', 'Reservoir', 'River', 'Creek', 'Tailwater', 'Pond', 'Tank',
+    'Flowage', 'Chain', 'Bay', 'Sound', 'Estuary', 'Lagoon',
+  ];
+
+  const types = useMemo(() => {
+    const seen = new Set((data ?? []).map((l) => l.water_type));
+    return [
+      ...CANONICAL_TYPES.filter((t) => seen.has(t)),
+      ...CANONICAL_TYPES.filter((t) => !seen.has(t)),
+      ...[...seen].filter((t) => !CANONICAL_TYPES.includes(t)).sort(),
+    ];
+  }, [data]);
 
   const filtered = useMemo(() => {
     const needle = q.trim().toLowerCase();
@@ -75,11 +89,15 @@ export function LakesPage() {
           <FilterIcon />
           <select value={wtype} onChange={(e) => setWtype(e.target.value)} aria-label="Filter by water type">
             <option value="all">All water types</option>
-            {types.map((t) => (
-              <option key={t} value={t}>
-                {t}
-              </option>
-            ))}
+            {types.map((t) => {
+              const n = (data ?? []).filter((l) => l.water_type === t).length;
+              return (
+                <option key={t} value={t}>
+                  {t}
+                  {n ? ` (${n})` : ' — none yet'}
+                </option>
+              );
+            })}
           </select>
         </label>
 
@@ -106,7 +124,11 @@ export function LakesPage() {
       {loading && <div className="spinner">Casting a line…</div>}
 
       {!loading && !error && filtered.length === 0 && (
-        <div className="empty">No waters match that search. Try a different name, state or type.</div>
+        <div className="empty">
+          {wtype !== 'all' && !(data ?? []).some((l) => l.water_type === wtype)
+            ? `No ${wtype.toLowerCase()}s are catalogued yet. Most stock tanks are private, unnamed ranch water, so they have to be added by name rather than imported.`
+            : 'No waters match that search. Try a different name, state or type.'}
+        </div>
       )}
 
       <div className="grid">
