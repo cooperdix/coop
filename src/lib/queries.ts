@@ -85,14 +85,20 @@ export function useSpeciesList() {
   return useAsync(async () => {
     const { data, error } = await supabase
       .from('fish_species')
-      .select('*, water_fish(count)')
+      .select('*, water_fish(waters(slug, latitude, longitude))')
       .order('common_name');
     if (error) throw error;
 
     return (data ?? []).map((row) => {
-      const { water_fish, ...species } = row as Species & { water_fish: { count: number }[] };
-      return { ...species, lakeCount: water_fish?.[0]?.count ?? 0 };
-    }) as (Species & { lakeCount: number })[];
+      const { water_fish, ...species } = row as Species & {
+        water_fish: { waters: { slug: string; latitude: number; longitude: number } | null }[];
+      };
+      const waters = (water_fish ?? []).map((r) => r.waters).filter((w) => w !== null);
+      return { ...species, lakeCount: waters.length, waters };
+    }) as (Species & {
+      lakeCount: number;
+      waters: { slug: string; latitude: number; longitude: number }[];
+    })[];
   }, []);
 }
 

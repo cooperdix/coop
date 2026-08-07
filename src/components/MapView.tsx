@@ -1,209 +1,130 @@
-import { useEffect, useRef } from 'react';
-import mapboxgl from 'mapbox-gl';
-import 'mapbox-gl/dist/mapbox-gl.css';
-import { MAPBOX_TOKEN } from '../lib/supabase';
-import type { Feature, Point } from 'geojson';
+import { useMemo, useState } from 'react';
+import { geoAlbersUsa } from 'd3-geo';
+import { MAP_WIDTH, MAP_HEIGHT, PROJECTION, STATE_PATHS, STATE_BORDERS } from './usMapPaths';
 import type { Lake } from '../lib/types';
+import type { Coords } from '../lib/geo';
+
+type Water = Lake & { fishCount?: number; distance?: number };
 
 type Props = {
-  waters: (Lake & { fishCount?: number })[];
-  /** Called with a water slug when a pin is clicked. */
+  waters: Water[];
   onSelect: (slug: string) => void;
+  /** Drawn as a distinct marker when the visitor has shared a location. */
+  here?: Coords | null;
 };
 
-type LakeFeature = Feature<
-  Point,
-  { slug: string; name: string; where: string; fish: number; cluster_id: number }
->;
-
-/** mapbox-gl's own feature type does not expose geometry/properties to TypeScript. */
-const asFeature = (f: unknown): LakeFeature | undefined => f as LakeFeature | undefined;
-
-/** Opening view: the whole country, Alaska and Hawaii included. */
-const US_BOUNDS: [number, number, number, number] = [-170, 17, -64, 66];
-
 /**
- * Hard pan limit, a little looser than the opening view so lakes near the edge
- * (Hawaii, the Alaska interior, northern Maine) can still be centred comfortably.
+ * Albers USA, matching the projection the state outlines were generated with,
+ * so points land where they should. Alaska and Hawaii are inset by the
+ * projection itself, which is why remote waters still appear on one screen.
  */
-const US_MAX_BOUNDS: [[number, number], [number, number]] = [
-  [-175, 12],
-  [-58, 72],
-];
+const projection = geoAlbersUsa()
+  .translate(PROJECTION.translate as [number, number])
+  .scale(PROJECTION.scale);
 
-/** Zoomed out past this the US stops filling the frame, so don't allow it. */
-const MIN_ZOOM = 2.2;
+/** Colour by water type so the map reads as a guide, not just dots. */
+const TYPE_COLOR: Record<string, string> = {
+  River: '#3d626c',
+  Creek: '#3d626c',
+  Tailwater: '#2c4a52',
+  Bay: '#4a7c8c',
+  Sound: '#4a7c8c',
+  Estuary: '#4a7c8c',
+  Lagoon: '#4a7c8c',
+};
+const DEFAULT_COLOR = '#a0522d';
+const colorFor = (t: string) => TYPE_COLOR[t] ?? DEFAULT_COLOR;
 
-export function MapView({ waters, onSelect }: Props) {
-  const container = useRef<HTMLDivElement | null>(null);
-  const map = useRef<mapboxgl.Map | null>(null);
-  // Kept in a ref so the click handler always sees the current callback.
-  const onSelectRef = useRef(onSelect);
-  onSelectRef.current = onSelect;
+export function MapView({ waters, onSelect, here }: Props) {
+  const [hover, setHover] = useState<{ w: Water; x: number; y: number } | null>(null);
 
-  useEffect(() => {
-    if (!MAPBOX_TOKEN || !container.current || map.current) return;
+  const points = useMemo(
+    () =>
+      waters
+        .map((w) => {
+          const p = projection([w.longitude, w.latitude]);
+          return p ? { w, x: p[0], y: p[1] } : null;
+        })
+        .filter((p): p is { w: Water; x: number; y: number } => p !== null),
+    [waters],
+  );
 
-    mapboxgl.accessToken = MAPBOX_TOKEN;
-    const m = new mapboxgl.Map({
-      container: container.current,
-      style: 'mapbox://styles/mapbox/outdoors-v12',
-      bounds: US_BOUNDS,
-      fitBoundsOptions: { padding: 30 },
-      // Keep the map on the United States: no panning off to other continents,
-      // no zooming out to a world view, and no repeating globe either side.
-      maxBounds: US_MAX_BOUNDS,
-      minZoom: MIN_ZOOM,
-      renderWorldCopies: false,
-      cooperativeGestures: true,
-    });
-    map.current = m;
+  const mePoint = useMemo(() => {
+    if (!here) return null;
+    const p = projection([here.lon, here.lat]);
+    return p ? { x: p[0], y: p[1] } : null;
+  }, [here]);
 
-    m.addControl(new mapboxgl.NavigationControl({ showCompass: false }), 'top-right');
-    m.addControl(new mapboxgl.FullscreenControl(), 'top-right');
+  return (
+    <div className="map-wrap">
+      <svg
+        viewBox={`0 0 ${MAP_WIDTH} ${MAP_HEIGHT}`}
+        className="usmap"
+        role="img"
+        aria-label={`Map of ${waters.length} fishing waters across the United States`}
+      >
+        <g className="usmap-land">
+          {STATE_PATHS.map((s) => (
+            <path key={s.id} d={s.d}>
+              <title>{s.name}</title>
+            </path>
+          ))}
+        </g>
+        <path className="usmap-borders" d={STATE_BORDERS} />
 
-    m.on('load', () => {
-      m.addSource('lakes', {
-        type: 'geojson',
-        data: { type: 'FeatureCollection', features: [] },
-        cluster: true,
-        clusterRadius: 44,
-        clusterMaxZoom: 8,
-      });
+        {mePoint && (
+          <g className="usmap-me" transform={`translate(${mePoint.x},${mePoint.y})`}>
+            <circle r="13" className="usmap-me-halo" />
+            <circle r="5" />
+          </g>
+        )}
 
-      // Clustered groups.
-      m.addLayer({
-        id: 'clusters',
-        type: 'circle',
-        source: 'lakes',
-        filter: ['has', 'point_count'],
-        paint: {
-          'circle-color': '#2f4530',
-          'circle-opacity': 0.9,
-          'circle-radius': ['step', ['get', 'point_count'], 15, 10, 20, 30, 26],
-          'circle-stroke-width': 2.5,
-          'circle-stroke-color': '#f6f0e2',
-        },
-      });
-      m.addLayer({
-        id: 'cluster-count',
-        type: 'symbol',
-        source: 'lakes',
-        filter: ['has', 'point_count'],
-        layout: {
-          'text-field': ['get', 'point_count_abbreviated'],
-          'text-font': ['DIN Offc Pro Medium', 'Arial Unicode MS Bold'],
-          'text-size': 13,
-        },
-        paint: { 'text-color': '#f6f0e2' },
-      });
+        <g>
+          {points.map(({ w, x, y }) => (
+            <circle
+              key={w.slug}
+              cx={x}
+              cy={y}
+              r={hover?.w.slug === w.slug ? 7 : 4.5}
+              fill={colorFor(w.water_type)}
+              className="usmap-pin"
+              tabIndex={0}
+              role="button"
+              aria-label={`${w.name}, ${w.state}`}
+              onMouseEnter={() => setHover({ w, x, y })}
+              onMouseLeave={() => setHover(null)}
+              onFocus={() => setHover({ w, x, y })}
+              onBlur={() => setHover(null)}
+              onClick={() => onSelect(w.slug)}
+              onKeyDown={(e) => {
+                if (e.key === 'Enter' || e.key === ' ') {
+                  e.preventDefault();
+                  onSelect(w.slug);
+                }
+              }}
+            />
+          ))}
+        </g>
+      </svg>
 
-      // Individual lakes.
-      m.addLayer({
-        id: 'lake-points',
-        type: 'circle',
-        source: 'lakes',
-        filter: ['!', ['has', 'point_count']],
-        paint: {
-          'circle-color': '#a0522d',
-          'circle-radius': 7,
-          'circle-stroke-width': 2.5,
-          'circle-stroke-color': '#fdfaf1',
-        },
-      });
-
-      const popup = new mapboxgl.Popup({
-        closeButton: false,
-        offset: 14,
-        maxWidth: '240px',
-      });
-
-      m.on('mouseenter', 'lake-points', (e) => {
-        m.getCanvas().style.cursor = 'pointer';
-        const f = asFeature(e.features?.[0]);
-        if (!f || f.geometry.type !== 'Point') return;
-        const p = f.properties;
-        popup
-          .setLngLat(f.geometry.coordinates as [number, number])
-          .setHTML(
-            `<div class="popup-name">${p.name}</div>` +
-              `<div class="popup-meta">${p.where}</div>` +
-              `<div class="popup-link">${p.fish} species &rarr;</div>`,
-          )
-          .addTo(m);
-      });
-      m.on('mouseleave', 'lake-points', () => {
-        m.getCanvas().style.cursor = '';
-        popup.remove();
-      });
-
-      m.on('click', 'lake-points', (e) => {
-        const slug = asFeature(e.features?.[0])?.properties?.slug;
-        if (typeof slug === 'string') onSelectRef.current(slug);
-      });
-
-      // Clicking a cluster zooms into it.
-      m.on('click', 'clusters', (e) => {
-        const f = asFeature(e.features?.[0]);
-        if (!f || f.geometry.type !== 'Point') return;
-        const src = m.getSource('lakes') as mapboxgl.GeoJSONSource;
-        src.getClusterExpansionZoom(f.properties.cluster_id, (err, zoom) => {
-          if (err || zoom == null) return;
-          m.easeTo({ center: f.geometry.coordinates as [number, number], zoom });
-        });
-      });
-      m.on('mouseenter', 'clusters', () => (m.getCanvas().style.cursor = 'pointer'));
-      m.on('mouseleave', 'clusters', () => (m.getCanvas().style.cursor = ''));
-    });
-
-    return () => {
-      m.remove();
-      map.current = null;
-    };
-  }, []);
-
-  // Push the (possibly filtered) lake list into the map source.
-  useEffect(() => {
-    const m = map.current;
-    if (!m) return;
-
-    const push = () => {
-      const src = m.getSource('lakes') as mapboxgl.GeoJSONSource | undefined;
-      if (!src) return;
-      src.setData({
-        type: 'FeatureCollection',
-        features: waters.map((l) => ({
-          type: 'Feature',
-          geometry: { type: 'Point', coordinates: [l.longitude, l.latitude] },
-          properties: {
-            slug: l.slug,
-            name: l.name,
-            where: `${l.county ? l.county + ' County, ' : ''}${l.state}`,
-            fish: l.fishCount ?? 0,
-          },
-        })),
-      });
-    };
-
-    if (m.isStyleLoaded()) push();
-    else m.once('load', push);
-  }, [waters]);
-
-  if (!MAPBOX_TOKEN) {
-    return (
-      <div className="map-wrap">
-        <div className="map-missing">
-          <div>
-            <strong>Map needs a Mapbox token.</strong>
-            <p style={{ margin: '0.5rem 0 0', fontSize: '0.9rem' }}>
-              Add <code>VITE_MAPBOX_TOKEN</code> to your environment variables, then redeploy.
-              The lake list below works without it.
-            </p>
-          </div>
+      {hover && (
+        <div
+          className="usmap-tip"
+          style={{
+            left: `${(hover.x / MAP_WIDTH) * 100}%`,
+            top: `${(hover.y / MAP_HEIGHT) * 100}%`,
+          }}
+        >
+          <strong>{hover.w.name}</strong>
+          <span>
+            {hover.w.water_type} · {hover.w.state}
+          </span>
+          <span>
+            {hover.w.fishCount ?? 0} species
+            {hover.w.distance != null && ` · ${Math.round(hover.w.distance)} mi away`}
+          </span>
         </div>
-      </div>
-    );
-  }
-
-  return <div className="map-wrap" ref={container} />;
+      )}
+    </div>
+  );
 }

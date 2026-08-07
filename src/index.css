@@ -453,3 +453,98 @@ h1, h2, h3, h4 {
 }
 
 .lake-card .wtype { align-self: flex-start; margin-top: 0.4rem; }
+
+/* ---------- Map: pure SVG, no tiles or token ---------- */
+
+.map-wrap {
+  position: relative;
+  border-radius: var(--radius);
+  overflow: hidden;
+  border: 1px solid var(--line-2);
+  background: var(--paper-2);
+  box-shadow: var(--shadow);
+  margin-bottom: 1.25rem;
+}
+.usmap { display: block; width: 100%; height: auto; }
+.usmap-land path {
+  fill: var(--card);
+  stroke: none;
+  transition: fill 0.15s;
+}
+.usmap-land path:hover { fill: var(--paper-2); }
+.usmap-borders { fill: none; stroke: var(--line-2); stroke-width: 0.9; stroke-linejoin: round; }
+
+.usmap-pin { cursor: pointer; opacity: 0.9; transition: r 0.12s, opacity 0.12s; }
+.usmap-pin:hover, .usmap-pin:focus-visible { opacity: 1; }
+
+.usmap-me circle { fill: var(--forest); }
+.usmap-me-halo { fill: var(--forest); opacity: 0.22; }
+@media (prefers-reduced-motion: no-preference) {
+  .usmap-me-halo { animation: pulse 2.4s ease-out infinite; transform-origin: center; }
+  @keyframes pulse {
+    0% { r: 6; opacity: 0.45; }
+    100% { r: 18; opacity: 0; }
+  }
+}
+
+.usmap-tip {
+  position: absolute;
+  transform: translate(-50%, calc(-100% - 12px));
+  background: var(--card);
+  border: 1px solid var(--line-2);
+  border-radius: 8px;
+  padding: 0.45rem 0.7rem;
+  box-shadow: var(--shadow-lg);
+  pointer-events: none;
+  display: flex;
+  flex-direction: column;
+  white-space: nowrap;
+  z-index: 5;
+}
+.usmap-tip strong { font-family: var(--serif); font-size: 0.95rem; }
+.usmap-tip span { font-size: 0.75rem; color: var(--ink-3); }
+
+/* ---------- Near me ---------- */
+
+.near-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  border: 1px solid var(--line-2);
+  background: var(--card);
+  border-radius: 999px;
+  padding: 0.45rem 0.95rem;
+  font: inherit;
+  font-size: 0.88rem;
+  font-weight: 700;
+  color: var(--ink-2);
+  cursor: pointer;
+  box-shadow: var(--shadow);
+}
+.near-btn:hover:not(:disabled) { border-color: var(--forest-2); color: var(--forest); }
+.near-btn:disabled { opacity: 0.6; cursor: default; }
+
+.notice {
+  padding: 0.7rem 1rem;
+  border-radius: var(--radius);
+  border: 1px solid var(--line-2);
+  background: var(--paper-2);
+  color: var(--ink-2);
+  font-size: 0.88rem;
+  margin-bottom: 1rem;
+}
+.notice-ok { border-color: var(--forest-2); background: rgba(63, 90, 60, 0.08); }
+.linkish {
+  border: 0;
+  background: none;
+  padding: 0;
+  font: inherit;
+  font-weight: 700;
+  color: var(--rust);
+  cursor: pointer;
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
+
+.wtags { display: flex; gap: 0.4rem; flex-wrap: wrap; margin-top: 0.45rem; }
+.tag-near { border-color: var(--rust); color: var(--rust); background: rgba(160, 82, 45, 0.08); }
