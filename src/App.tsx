@@ -3,9 +3,14 @@ import { LakesPage } from './pages/LakesPage';
 import { LakeDetailPage } from './pages/LakeDetailPage';
 import { SpeciesPage } from './pages/SpeciesPage';
 import { SpeciesDetailPage } from './pages/SpeciesDetailPage';
+import { LoginPage } from './pages/LoginPage';
+import { PaywallPage } from './pages/PaywallPage';
 import { BrandMark } from './components/Icons';
+import { AuthProvider, useAuth } from './lib/auth';
 
-export default function App() {
+function Guide() {
+  const { email, signOut } = useAuth();
+
   return (
     <BrowserRouter>
       <div className="app">
@@ -23,6 +28,9 @@ export default function App() {
                 Lakes
               </NavLink>
               <NavLink to="/species">Species</NavLink>
+              <button className="nav-signout" onClick={signOut} title={email ?? undefined}>
+                Sign out
+              </button>
             </nav>
           </div>
         </header>
@@ -51,5 +59,23 @@ export default function App() {
         </footer>
       </div>
     </BrowserRouter>
+  );
+}
+
+/** Signed out, unpaid, or in. The database enforces the same three states. */
+function Gate() {
+  const { ready, session, hasAccess } = useAuth();
+
+  if (!ready) return <div className="gate"><div className="spinner">Casting a line…</div></div>;
+  if (!session) return <LoginPage />;
+  if (!hasAccess) return <PaywallPage />;
+  return <Guide />;
+}
+
+export default function App() {
+  return (
+    <AuthProvider>
+      <Gate />
+    </AuthProvider>
   );
 }
