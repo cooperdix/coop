@@ -5,9 +5,9 @@ import { createClient } from '@supabase/supabase-js';
  * the environment.
  *
  * This key is designed to be exposed in a browser. It carries the `anon` role,
- * and every table is guarded by row level security: the guide is readable only
- * by an authenticated user with an active subscription, and nothing is
- * client-writable. Publishing it grants no more than visiting the site does.
+ * and every table is guarded by row level security with a SELECT-only policy,
+ * so it can read the guide and nothing else. There is no write path from the
+ * client. Publishing it grants no more than visiting the site does.
  *
  * Vite inlines the value into the client bundle either way, so sourcing it from
  * an environment variable buys no security — it only adds a way for the whole
@@ -27,12 +27,8 @@ const SUPABASE_ANON_KEY =
   '.7v3y4puNQbEqDUgAkyWi5qQig_XjnJ5pgkks41vtOW8';
 
 export const supabase = createClient(SUPABASE_URL, SUPABASE_ANON_KEY, {
-  auth: {
-    persistSession: true,
-    autoRefreshToken: true,
-    // Magic links come back as a URL fragment that has to be consumed on load.
-    detectSessionInUrl: true,
-  },
+  // The guide is free and needs no sign-in, so there is no session to keep.
+  auth: { persistSession: false },
 });
 
 /**

@@ -3,14 +3,9 @@ import { LakesPage } from './pages/LakesPage';
 import { LakeDetailPage } from './pages/LakeDetailPage';
 import { SpeciesPage } from './pages/SpeciesPage';
 import { SpeciesDetailPage } from './pages/SpeciesDetailPage';
-import { LoginPage } from './pages/LoginPage';
-import { PaywallPage } from './pages/PaywallPage';
 import { BrandMark } from './components/Icons';
-import { AuthProvider, useAuth } from './lib/auth';
 
-function Guide() {
-  const { email, signOut } = useAuth();
-
+export default function App() {
   return (
     <BrowserRouter>
       <div className="app">
@@ -28,9 +23,6 @@ function Guide() {
                 Waters
               </NavLink>
               <NavLink to="/species">Species</NavLink>
-              <button className="nav-signout" onClick={signOut} title={email ?? undefined}>
-                Sign out
-              </button>
             </nav>
           </div>
         </header>
@@ -53,29 +45,11 @@ function Guide() {
         </main>
 
         <footer className="footer">
-          A curated guide to notable US fishing lakes. Species lists are a reference, not a
+          A curated guide to notable US fishing waters. Species lists are a reference, not a
           substitute for current state regulations — always check your state wildlife agency for
           licences, seasons and limits before you fish.
         </footer>
       </div>
     </BrowserRouter>
-  );
-}
-
-/** Signed out, unpaid, or in. The database enforces the same three states. */
-function Gate() {
-  const { ready, session, hasAccess } = useAuth();
-
-  if (!ready) return <div className="gate"><div className="spinner">Casting a line…</div></div>;
-  if (!session) return <LoginPage />;
-  if (!hasAccess) return <PaywallPage />;
-  return <Guide />;
-}
-
-export default function App() {
-  return (
-    <AuthProvider>
-      <Gate />
-    </AuthProvider>
   );
 }

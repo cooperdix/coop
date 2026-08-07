@@ -1,10 +1,13 @@
 # Little Lake Fishing
 
-A field guide to notable fishing lakes across all fifty US states. Pick a lake to see exactly
-which fish species you can catch there, how and when to target them, and what the access looks
-like — or start from a species and find every lake in the guide that holds it.
+A free field guide to notable fishing waters across all fifty US states — lakes, rivers,
+tailwaters, bays and sounds. Pick a water to see exactly which fish species you can catch there,
+how and when to target them, and what the access looks like, or start from a species and find
+every water in the guide that holds it.
 
-**273 lakes · 50 states · 69 species · 2,558 lake–species records**
+No account, no sign-in, no payment.
+
+**374 waters · 50 states · 90 species · 3,337 water–species records**
 
 ## Stack
 
@@ -31,7 +34,7 @@ The app reads **one** environment variable. Vite only exposes variables prefixed
 | --- | --- |
 | `VITE_MAPBOX_TOKEN` | Mapbox **public** access token, starts with `pk.` |
 
-The Supabase URL and publishable key are committed in `src/lib/supabase.ts` rather than read from
+The Supabase URL and anon key are committed in `src/lib/supabase.ts` rather than read from
 the environment. That is deliberate: the publishable key is designed to be exposed in a browser,
 every table is `SELECT`-only under row level security, and Vite inlines the value into the client
 bundle regardless. Sourcing it from an env var buys no security and adds a way for the entire app
@@ -39,7 +42,7 @@ to break on a mistyped paste in a hosting dashboard. To target a different proje
 constants at the top of that file.
 
 Without a Mapbox token the app still works — the map panel shows a short "add a token" notice and
-the searchable lake list below it behaves normally.
+the searchable water list below it behaves normally.
 
 ### Getting a Mapbox token
 
@@ -56,7 +59,7 @@ The free tier covers 50,000 map loads per month.
 1. Push this branch to GitHub (already done).
 2. In Vercel, **Add New → Project** and import the repository.
 3. Vercel detects Vite automatically; `vercel.json` pins the framework, build command, output
-   directory, and the SPA rewrite that makes `/lakes/:slug` deep links work on refresh.
+   directory, and the SPA rewrite that makes `/waters/:slug` deep links work on refresh.
 4. Under **Settings → Environment Variables**, add `VITE_MAPBOX_TOKEN` for **Production**,
    **Preview** and **Development**. Nothing else is required.
 5. Deploy. Every later push to this branch triggers a new deployment automatically.
@@ -70,25 +73,31 @@ vars in at build time rather than reading them at runtime.
 Schema and seed data live in Supabase migrations (project `qebhahxvlopomvkbykeb`).
 
 ```
-fish_species   69 rows   name, description, identification, bait and lures,
+fish_species   90 rows   name, description, identification, bait and lures,
                          season, time of day, typical and record size
-lakes         273 rows   name, state, county, coordinates, size, depth, elevation,
-                         description, access notes, ramps, shore, marinas, camping, facilities
-lake_fish    2558 rows   join table, with an abundance rating per pairing
+waters        374 rows   name, water_type, state, county, coordinates, size, depth,
+                         elevation, description, access notes, ramps, shore, marinas,
+                         camping, facilities
+water_fish   3337 rows   join table, with an abundance rating per pairing
 ```
 
 All three tables are `SELECT`-only for the `anon` and `authenticated` roles. There is no write
 path from the client.
 
+Dormant `profiles`, `subscriptions` and `owner_emails` tables remain from an earlier paid version.
+They hold no rows, are unreachable from the browser, and exist only so billing could be switched
+back on by swapping three policies. Drop them if you never want that option.
+
 ## About the data
 
 This is a **curated** guide, not an exhaustive one. There are roughly 2.6 million lakes and ponds
-in the United States, and no public dataset links them to fish species — species records live with
-fifty separate state wildlife agencies in fifty different formats.
+in the United States, plus millions of river miles, and no public dataset links them to fish
+species — species records live with fifty separate state wildlife agencies in fifty different
+formats.
 
-So rather than import a huge list of lakes with no species data attached, the guide covers notable
-fishing lakes in every state, each with a researched species list. Every lake in the app is one you
-could actually plan a trip around. The schema scales to more lakes whenever you want to add them.
+So rather than import a huge list of waters with no species data attached, the guide covers notable
+fishing waters in every state, each with a researched species list. Every water in the app is one
+you could actually plan a trip around. The schema scales to more whenever you want to add them.
 
 Species lists are a reference for planning, not a legal document. Seasons, limits, slot rules and
 licence requirements change every year and vary by water — always check your state wildlife agency
