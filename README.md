@@ -1,4 +1,4 @@
-# Fishing Frenzy
+# Little Lake Fishing
 
 A field guide to notable fishing lakes across all fifty US states. Pick a lake to see exactly
 which fish species you can catch there, how and when to target them, and what the access looks
@@ -25,17 +25,18 @@ cp .env.example .env.local     # then fill in your Mapbox token
 npm run dev
 ```
 
-The app reads three environment variables. Vite only exposes variables prefixed with `VITE_`.
+The app reads **one** environment variable. Vite only exposes variables prefixed with `VITE_`.
 
 | Variable | What it is |
 | --- | --- |
-| `VITE_SUPABASE_URL` | Supabase project URL |
-| `VITE_SUPABASE_PUBLISHABLE_KEY` | Supabase publishable (anon) key |
 | `VITE_MAPBOX_TOKEN` | Mapbox **public** access token, starts with `pk.` |
 
-The Supabase URL and publishable key are already filled in inside `.env.example`. They are safe
-to ship in the browser bundle: every table has row level security enabled with a `SELECT`-only
-policy, so an anonymous key can read the guide and nothing else.
+The Supabase URL and publishable key are committed in `src/lib/supabase.ts` rather than read from
+the environment. That is deliberate: the publishable key is designed to be exposed in a browser,
+every table is `SELECT`-only under row level security, and Vite inlines the value into the client
+bundle regardless. Sourcing it from an env var buys no security and adds a way for the entire app
+to break on a mistyped paste in a hosting dashboard. To target a different project, edit the two
+constants at the top of that file.
 
 Without a Mapbox token the app still works — the map panel shows a short "add a token" notice and
 the searchable lake list below it behaves normally.
@@ -56,8 +57,8 @@ The free tier covers 50,000 map loads per month.
 2. In Vercel, **Add New → Project** and import the repository.
 3. Vercel detects Vite automatically; `vercel.json` pins the framework, build command, output
    directory, and the SPA rewrite that makes `/lakes/:slug` deep links work on refresh.
-4. Under **Settings → Environment Variables**, add all three variables above for
-   **Production**, **Preview** and **Development**.
+4. Under **Settings → Environment Variables**, add `VITE_MAPBOX_TOKEN` for **Production**,
+   **Preview** and **Development**. Nothing else is required.
 5. Deploy. Every later push to this branch triggers a new deployment automatically.
 
 If the map is blank after deploying, the token is almost always the cause: confirm

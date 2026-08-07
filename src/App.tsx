@@ -14,7 +14,7 @@ export default function App() {
             <Link to="/" className="brand">
               <BrandMark className="brand-mark" />
               <span className="brand-text">
-                <span className="brand-name">Fishing Frenzy</span>
+                <span className="brand-name">Little Lake Fishing</span>
                 <span className="brand-sub">Lakes &amp; species of the USA</span>
               </span>
             </Link>

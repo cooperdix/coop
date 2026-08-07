@@ -1,17 +1,28 @@
 import { createClient } from '@supabase/supabase-js';
 
-const url = import.meta.env.VITE_SUPABASE_URL;
-const key = import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY;
+/**
+ * Supabase connection details, deliberately committed rather than read from
+ * the environment.
+ *
+ * The publishable key is designed to be exposed in a browser: every table has
+ * row level security enabled with a SELECT-only policy for the anon role, so
+ * this key can read the guide and nothing else. There is no write path.
+ *
+ * It gets inlined into the client bundle either way, so sourcing it from an
+ * environment variable buys no security — it only adds a way for the whole app
+ * to break on a mistyped or truncated paste in a hosting dashboard. Point this
+ * at a different project by editing these two constants.
+ */
+const SUPABASE_URL = 'https://qebhahxvlopomvkbykeb.supabase.co';
+const SUPABASE_PUBLISHABLE_KEY = 'sb_publishable_nyEJTsB1-TlPnruw0hM60g_b-e0C7yx';
 
-if (!url || !key) {
-  throw new Error(
-    'Missing Supabase config. Set VITE_SUPABASE_URL and VITE_SUPABASE_PUBLISHABLE_KEY ' +
-      '(locally in .env.local, on Vercel in Project Settings > Environment Variables).',
-  );
-}
-
-export const supabase = createClient(url, key, {
+export const supabase = createClient(SUPABASE_URL, SUPABASE_PUBLISHABLE_KEY, {
   auth: { persistSession: false },
 });
 
-export const MAPBOX_TOKEN = import.meta.env.VITE_MAPBOX_TOKEN ?? '';
+/**
+ * The Mapbox token genuinely varies per deployment and is billed per account,
+ * so it stays an environment variable. Trimmed because hosting dashboards
+ * commonly keep trailing whitespace on paste.
+ */
+export const MAPBOX_TOKEN = (import.meta.env.VITE_MAPBOX_TOKEN ?? '').trim();

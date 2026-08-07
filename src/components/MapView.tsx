@@ -19,8 +19,20 @@ type LakeFeature = Feature<
 /** mapbox-gl's own feature type does not expose geometry/properties to TypeScript. */
 const asFeature = (f: unknown): LakeFeature | undefined => f as LakeFeature | undefined;
 
-/** Continental US plus enough room that Alaska and Hawaii pins are reachable. */
+/** Opening view: the whole country, Alaska and Hawaii included. */
 const US_BOUNDS: [number, number, number, number] = [-170, 17, -64, 66];
+
+/**
+ * Hard pan limit, a little looser than the opening view so lakes near the edge
+ * (Hawaii, the Alaska interior, northern Maine) can still be centred comfortably.
+ */
+const US_MAX_BOUNDS: [[number, number], [number, number]] = [
+  [-175, 12],
+  [-58, 72],
+];
+
+/** Zoomed out past this the US stops filling the frame, so don't allow it. */
+const MIN_ZOOM = 2.2;
 
 export function MapView({ lakes, onSelect }: Props) {
   const container = useRef<HTMLDivElement | null>(null);
@@ -38,6 +50,11 @@ export function MapView({ lakes, onSelect }: Props) {
       style: 'mapbox://styles/mapbox/outdoors-v12',
       bounds: US_BOUNDS,
       fitBoundsOptions: { padding: 30 },
+      // Keep the map on the United States: no panning off to other continents,
+      // no zooming out to a world view, and no repeating globe either side.
+      maxBounds: US_MAX_BOUNDS,
+      minZoom: MIN_ZOOM,
+      renderWorldCopies: false,
       cooperativeGestures: true,
     });
     map.current = m;
