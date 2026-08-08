@@ -4,6 +4,7 @@ import { useLakes } from '../lib/queries';
 import { MapView } from '../components/MapView';
 import { SearchIcon, PinIcon, FilterIcon } from '../components/Icons';
 import { useGeo, distanceMiles, formatMiles } from '../lib/geo';
+import { StateSelect } from '../components/StateSelect';
 
 export function LakesPage() {
   const { data, loading, error } = useLakes();
@@ -100,17 +101,15 @@ export function LakesPage() {
           />
         </label>
 
-        <label className="field">
-          <FilterIcon />
-          <select value={state} onChange={(e) => setState(e.target.value)} aria-label="Filter by state">
-            <option value="all">All states</option>
-            {states.map(([code, name]) => (
-              <option key={code} value={code}>
-                {name}
-              </option>
-            ))}
-          </select>
-        </label>
+        <StateSelect
+          value={state}
+          onChange={setState}
+          options={states.map(([code, name]) => ({
+            code,
+            name,
+            count: (data ?? []).filter((l) => l.state_code === code).length,
+          }))}
+        />
 
         <label className="field">
           <FilterIcon />

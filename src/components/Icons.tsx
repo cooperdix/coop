@@ -39,6 +39,18 @@ export const ChevronLeft = ({ size = 16, className }: P) => (
   </svg>
 );
 
+export const ChevronDown = ({ size = 16, className }: P) => (
+  <svg width={size} height={size} viewBox="0 0 24 24" fill="none" className={className} aria-hidden="true">
+    <path d="M6 9l6 6 6-6" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
+  </svg>
+);
+
+export const CheckIcon = ({ size = 16, className }: P) => (
+  <svg width={size} height={size} viewBox="0 0 24 24" fill="none" className={className} aria-hidden="true">
+    <path d="M20 6L9 17l-5-5" stroke="currentColor" strokeWidth="2.4" strokeLinecap="round" strokeLinejoin="round" />
+  </svg>
+);
+
 export const FilterIcon = ({ size = 16, className }: P) => (
   <svg {...base(size)} className={className} aria-hidden="true">
     <path d="M4 5h16l-6 7v6l-4 2v-8Z" />

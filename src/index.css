@@ -974,3 +974,76 @@ a { color: inherit; text-decoration: none; }
    do not run right into the edge of the frame. */
 .fish-fallback { padding: 4%; }
 .fish-fallback svg { width: 100%; height: 100%; max-width: none !important; max-height: none !important; }
+
+/* ------------------------------------------------------------ state picker */
+
+/* A native select cannot draw a shape inside an option, so this is a listbox,
+   styled to sit in the same row as the pill-shaped fields around it. */
+.state-select { position: relative; }
+.state-select-button {
+  font: inherit;
+  color: var(--ink);
+  cursor: pointer;
+  border: 1px solid var(--hairline);
+}
+.state-select-value { font-size: 0.92rem; white-space: nowrap; }
+.state-select-chevron {
+  color: var(--ink-4);
+  transition: transform 0.22s cubic-bezier(0.4, 0, 0.2, 1);
+}
+.state-select-chevron[data-open='true'] { transform: rotate(180deg); }
+
+.state-icon { fill: currentColor; flex: none; }
+
+.state-menu {
+  position: absolute;
+  top: calc(100% + 8px);
+  left: 0;
+  z-index: 40;
+  margin: 0;
+  padding: 0.35rem;
+  list-style: none;
+  min-width: 15rem;
+  max-height: min(60vh, 24rem);
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  background: var(--surface-raised);
+  backdrop-filter: blur(28px) saturate(180%);
+  -webkit-backdrop-filter: blur(28px) saturate(180%);
+  border: 1px solid var(--hairline);
+  border-radius: var(--r-lg);
+  box-shadow: var(--shadow-lg);
+  animation: menu-in 0.16s cubic-bezier(0.32, 0.72, 0, 1);
+}
+@keyframes menu-in {
+  from { opacity: 0; transform: translateY(-6px) scale(0.985); }
+  to { opacity: 1; transform: none; }
+}
+@supports not ((backdrop-filter: blur(1px)) or (-webkit-backdrop-filter: blur(1px))) {
+  .state-menu { background: var(--surface-solid); }
+}
+
+.state-option {
+  display: flex;
+  align-items: center;
+  gap: 0.7rem;
+  padding: 0.45rem 0.6rem;
+  border-radius: var(--r-sm);
+  font-size: 0.92rem;
+  cursor: pointer;
+  color: var(--ink-2);
+}
+/* Hover and keyboard share one highlight, so the mouse and the arrow keys
+   never disagree about which row is current. */
+.state-option[data-active='true'] { background: var(--accent-soft); color: var(--ink); }
+.state-option[aria-selected='true'] { font-weight: 500; color: var(--ink); }
+.state-option .state-icon { color: var(--ink-4); }
+.state-option[data-active='true'] .state-icon,
+.state-option[aria-selected='true'] .state-icon { color: var(--accent); }
+.state-option-name { flex: 1; white-space: nowrap; }
+.state-option-count {
+  font-size: 0.78rem;
+  color: var(--ink-4);
+  font-variant-numeric: tabular-nums;
+}
+.state-option-check { color: var(--accent); flex: none; }
