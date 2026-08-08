@@ -97,6 +97,16 @@ export function FishPhoto({
             <FishIllustration illustration={illustration} size={size} />
           </span>
         )}
+
+        {/* Every fish carries its drawn mark, photograph or not. It is what
+            makes a row of cards read as one set when the photographs behind
+            them were taken by a hundred different people in a hundred
+            different conditions. */}
+        {photo && (
+          <span className="fish-mark" aria-hidden="true">
+            <FishIllustration illustration={illustration} size={Math.round(size * 0.3)} />
+          </span>
+        )}
       </figure>
 
       {showCredit && photo && (photo.artist || photo.license) && (

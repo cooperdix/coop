@@ -42,7 +42,6 @@ const TITLE_OVERRIDES: Record<string, string | null> = {
   permit: 'Permit (fish)',
   sheefish: 'Nelma',
   greengill: null,
-  'meanmouth-bass': null,
   'king-salmon-landlocked': 'Chinook salmon',
   'hybrid-striped-bass': 'Striped bass',
   saugeye: 'Sauger',
@@ -50,11 +49,59 @@ const TITLE_OVERRIDES: Record<string, string | null> = {
   cisco: 'Coregonus artedi',
   'butterfly-peacock-bass': 'Cichla ocellaris',
   'clown-knifefish': 'Clown featherback',
+
+  // The meanmouth is a documented hybrid with its own article. It was
+  // previously set to give up without asking, which guaranteed the drawing.
+  'meanmouth-bass': 'Meanmouth bass',
+
+  // "Spanish mackerel" is the genus, and its page is full of other species.
+  // The fish caught off the American coast is the Atlantic one.
+  'spanish-mackerel': 'Atlantic Spanish mackerel',
+
+  // Both catfish resolve fine by name, but the scientific article is the one
+  // that reliably carries a photograph of the fish rather than of a dam or a
+  // fisheries worker.
+  'blue-catfish': 'Ictalurus furcatus',
+  'flathead-catfish': 'Pylodictis olivaris',
+
+  // Trout and char, pinned to the taxonomic article for each species.
+  //
+  // Common-name pages are the worst offenders in the whole guide: several are
+  // about a fishery or a stocking programme rather than the animal, and the
+  // pictures on them are of rivers, hatcheries and people. The species article
+  // is the one with a photograph of the fish.
+  'rainbow-trout': 'Oncorhynchus mykiss',
+  'brown-trout': 'Salmo trutta',
+  'brook-trout': 'Salvelinus fontinalis',
+  'lake-trout': 'Salvelinus namaycush',
+  'cutthroat-trout': 'Oncorhynchus clarkii',
+  'bull-trout': 'Salvelinus confluentus',
+  'golden-trout': 'Oncorhynchus aguabonita',
+  'gila-trout': 'Oncorhynchus gilae',
+  'apache-trout': 'Oncorhynchus apache',
+  'dolly-varden': 'Salvelinus malma',
+  'arctic-char': 'Salvelinus alpinus',
+  'lake-whitefish': 'Coregonus clupeaformis',
+  'mountain-whitefish': 'Prosopium williamsoni',
+  'arctic-grayling': 'Thymallus arcticus',
+  // Both are hatchery crosses with their own short articles; the scientific
+  // name is a formula rather than a title, so these have to be named directly.
+  'tiger-trout': 'Tiger trout',
+  splake: 'Splake',
 };
+
+/**
+ * A photograph is a JPEG. Charts, maps, diagrams, logos and interface
+ * furniture on Wikipedia are almost universally SVG or PNG, so requiring a
+ * photographic container throws all of them out in one move, before any
+ * scoring runs. The cost is the occasional PNG photograph; the benefit is that
+ * a graph can never win, whatever it happens to be called.
+ */
+const PHOTO_FILE = /\.jpe?g$/i;
 
 /** Never a usable photograph, whatever else it scores. */
 const REJECT =
-  /(\.svg$)|(\.ogv$)|(\.webm$)|(range|distribution|_map|map_|locator|stamp|logo|icon|commons-|wiki|diagram|chart|graph|skeleton|fossil|otolith|scale_bar|barcode|question_book|edit-|padlock|ambox)/i;
+  /(range|distribution|_map|map_|locator|stamp|logo|icon|commons-|wiki|diagram|chart|graph|plot|histogram|timeline|landings|catch data|stock assessment|phylogen|cladogram|taxonom|anatomy|schematic|skeleton|fossil|otolith|scale_bar|barcode|question_book|edit-|padlock|ambox|flag_of|seal_of|coat_of_arms|signature)/i;
 
 type Candidate = {
   url: string;
@@ -156,7 +203,7 @@ function toCandidates(pages: Record<string, any> | undefined, want: number): Can
         license: clean(info.extmetadata?.LicenseShortName?.value),
       } as Candidate;
     })
-    .filter((c): c is Candidate => c !== null && !REJECT.test(c.file));
+    .filter((c): c is Candidate => c !== null && PHOTO_FILE.test(c.file) && !REJECT.test(c.file));
 }
 
 /** Every image used on an article, with dimensions, in one request. */
@@ -186,12 +233,15 @@ function scoreFish(c: Candidate, names: string[]): number {
   // A whole fish side-on lands near 3:2 and runs out past 3:1 for a pike.
   if (ratio >= 1.25 && ratio <= 3.4) score += 40;
   else if (ratio > 3.4) score += 18;
-  else if (ratio >= 1.0) score += 8;
-  else score -= 25; // Portrait: usually a person holding it, or a head shot.
+  else if (ratio >= 1.0) score += 12;
+  // Portrait is only mildly against it: a big catfish or muskie held up for
+  // the camera is a tall photograph, and it is still the whole fish out of
+  // the water, which is the thing being looked for.
+  else score -= 8;
 
   // Out of water, and clearly the whole animal.
   if (/(caught|catch|angler|hand|held|holding|specimen|on ice|measur|weigh|trophy|creel)/.test(f))
-    score += 26;
+    score += 34;
   if (/\b(male|female|adult)\b/.test(f)) score += 6;
 
   // In the water, or only part of the animal.
@@ -199,7 +249,18 @@ function scoreFish(c: Candidate, names: string[]): number {
   if (/(head|mouth|jaw|teeth|eye|gill|fin detail|scales|closeup|close up|macro)/.test(f))
     score -= 34;
   if (/(egg|larva|fry|juvenile|fingerling|spawn|redd|nest)/.test(f)) score -= 22;
-  if (/(cooked|fillet|sushi|dish|market|plate|recipe|smoked|canned)/.test(f)) score -= 40;
+  // Food, not fish. A cooked, filleted or plated fish is never the picture
+  // wanted here, so this is a rejection rather than a penalty it could
+  // outscore on a page with nothing better.
+  if (
+    /(cook|fried|grill|bake|roast|fillet|filet|steak|sushi|sashimi|dish|meal|dinner|plate|platter|recipe|smoked|canned|tinned|market|fishmonger|restaurant|butcher|gutted|cleaned|salted|dried)/.test(
+      f,
+    )
+  )
+    return -1000;
+  // Trout articles in particular are full of scenery and hatchery plumbing.
+  if (/(river|creek|stream|lake|reservoir|hatchery|pond bank|valley|falls|dam|landscape)/.test(f))
+    score -= 28;
   if (/(painting|drawing|illustration|plate|engraving|lithograph|sketch|art)/.test(f)) score -= 45;
 
   // Named after the fish it shows.
@@ -293,7 +354,7 @@ export async function findPhoto(
       if (!cands.length) continue;
       // The floor keeps a page of maps and plates from yielding a bad photo
       // just because something had to win.
-      const found = best(cands, (c) => scoreFish(c, names), 0);
+      const found = best(cands, (c) => scoreFish(c, names), -12);
       if (found) {
         write(slug, found);
         return found;
