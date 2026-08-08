@@ -356,6 +356,8 @@ const KEY_TO_SHAPE: Record<string, keyof typeof SHAPES> = {
   bass: 'bass',
   smallmouth: 'smallmouth',
   sunfish: 'panfish',
+  // Some rows name the body plan directly rather than the fish family.
+  panfish: 'panfish',
   crappie: 'crappie',
   perch: 'perch',
   walleye: 'walleye',
