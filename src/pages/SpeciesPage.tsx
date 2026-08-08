@@ -1,7 +1,7 @@
 import { useMemo, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { useSpeciesList } from '../lib/queries';
-import { FishIllustration } from '../components/FishIllustration';
+import { FishPhoto } from '../components/FishPhoto';
 import { SearchIcon, FilterIcon, PinIcon } from '../components/Icons';
 import { useGeo, distanceMiles } from '../lib/geo';
 
@@ -144,7 +144,14 @@ export function SpeciesPage() {
       <div className="grid">
         {filtered.map((s) => (
           <Link key={s.slug} to={`/species/${s.slug}`} className="card species-card">
-            <FishIllustration illustration={s.illustration} size={150} className="art" />
+            <FishPhoto
+              slug={s.slug}
+              commonName={s.common_name}
+              scientificName={s.scientific_name}
+              illustration={s.illustration}
+              size={150}
+              className="art"
+            />
             <h3>{s.common_name}</h3>
             {s.scientific_name && <div className="sci">{s.scientific_name}</div>}
             <div className="n">

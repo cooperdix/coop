@@ -349,6 +349,22 @@ h1, h2, h3, h4 {
 }
 .species-card:hover { transform: translateY(-2px); box-shadow: var(--shadow-lg); }
 .species-card .art { align-self: center; margin: 0.2rem 0 0.5rem; }
+
+/* Photographs come back at whatever aspect the source file has, so they are
+   cropped to a consistent box. Without this a tall portrait of a trout would
+   shove every card in its row out of line. */
+.fish-photo {
+  display: block;
+  object-fit: cover;
+  border-radius: 8px;
+  background: var(--paper-2);
+  border: 1px solid var(--line);
+}
+.species-card .fish-photo { align-self: center; margin: 0.2rem 0 0.5rem; }
+.detail-head .fish-photo { border-radius: 10px; }
+/* The drawing is shown while a lookup is in flight; fading it in stops the
+   swap to a photograph from reading as a flicker. */
+.fish-art-loading { opacity: 0.85; }
 .species-card h3 { font-size: 1.05rem; }
 .species-card .sci { font-style: italic; font-size: 0.8rem; color: var(--ink-3); }
 .species-card .n { margin-top: 0.6rem; font-size: 0.8rem; font-weight: 700; color: var(--rust); }

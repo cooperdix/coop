@@ -1,6 +1,6 @@
 import { Link, useParams } from 'react-router-dom';
 import { useLake } from '../lib/queries';
-import { FishIllustration } from '../components/FishIllustration';
+import { FishPhoto } from '../components/FishPhoto';
 import { ChevronLeft, ChevronRight } from '../components/Icons';
 
 const nf = new Intl.NumberFormat('en-US');
@@ -75,7 +75,14 @@ export function LakeDetailPage() {
             <div className="fish-list">
               {species.map((s) => (
                 <Link key={s.slug} to={`/species/${s.slug}`} className="fish-item">
-                  <FishIllustration illustration={s.illustration} size={64} className="art" />
+                  <FishPhoto
+                    slug={s.slug}
+                    commonName={s.common_name}
+                    scientificName={s.scientific_name}
+                    illustration={s.illustration}
+                    size={64}
+                    className="art"
+                  />
                   <div style={{ minWidth: 0 }}>
                     <div className="nm">{s.common_name}</div>
                     {s.scientific_name && <div className="sci">{s.scientific_name}</div>}

@@ -1,6 +1,6 @@
 import { Link, useParams } from 'react-router-dom';
 import { useSpecies } from '../lib/queries';
-import { FishIllustration } from '../components/FishIllustration';
+import { FishPhoto } from '../components/FishPhoto';
 import { ChevronLeft } from '../components/Icons';
 
 export function SpeciesDetailPage() {
@@ -34,7 +34,13 @@ export function SpeciesDetailPage() {
       </Link>
 
       <div className="card detail-head">
-        <FishIllustration illustration={species.illustration} size={210} />
+        <FishPhoto
+          slug={species.slug}
+          commonName={species.common_name}
+          scientificName={species.scientific_name}
+          illustration={species.illustration}
+          size={210}
+        />
         <div style={{ flex: '1 1 320px' }}>
           <h1>{species.common_name}</h1>
           <div className="sub">
