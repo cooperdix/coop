@@ -94,7 +94,7 @@ export function FishPhoto({
           />
         ) : (
           <span className="fish-fallback">
-            <FishIllustration illustration={illustration} size={Math.round(size * 0.86)} />
+            <FishIllustration illustration={illustration} size={size} />
           </span>
         )}
       </figure>

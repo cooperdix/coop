@@ -1,3 +1,5 @@
+import { useLayoutEffect, useRef, useState } from 'react';
+
 /**
  * Hand-drawn SVG fish silhouettes, one per body plan.
  *
@@ -24,6 +26,9 @@ type Shape = {
   /** Body fill, from cool water tones to warm. */
   tone: string;
 };
+
+/** The frame the bodies were drawn in, used until the real bounds are known. */
+const DEFAULT_VIEWBOX = '-8 -16 216 132';
 
 const SHAPES: Record<string, Shape> = {
   // Deep-bodied, big-mouthed black bass.
@@ -398,18 +403,45 @@ type Props = {
 
 export function FishIllustration({ illustration, size = 120, className }: Props) {
   const shape = SHAPES[KEY_TO_SHAPE[illustration ?? ''] ?? 'bass'];
+  const groupRef = useRef<SVGGElement | null>(null);
+  const [box, setBox] = useState<string>(DEFAULT_VIEWBOX);
+
+  /**
+   * Fins, barbels and tails routinely reach outside the nominal 200x100 frame
+   * the bodies were drawn in, so a fixed viewBox either clips them or leaves
+   * the fish floating small in one corner. Measuring the assembled art and
+   * fitting the viewBox to it means every plate fills its box and none of it
+   * is cut off, whatever shape the fish is.
+   */
+  useLayoutEffect(() => {
+    const g = groupRef.current;
+    if (!g) return;
+    try {
+      const b = g.getBBox();
+      if (!b.width || !b.height) return;
+      const pad = Math.max(b.width, b.height) * 0.04;
+      setBox(
+        `${b.x - pad} ${b.y - pad} ${b.width + pad * 2} ${b.height + pad * 2}`,
+      );
+    } catch {
+      // getBBox throws on a detached or hidden node; the default frame stands.
+    }
+  }, [shape]);
 
   return (
     <svg
-      viewBox="0 0 200 100"
-      width={size}
-      height={size / 2}
+      viewBox={box}
+      // Scales to whatever box it is given and always keeps the whole fish
+      // inside it, rather than being sized in pixels and spilling over.
+      width="100%"
+      height="100%"
+      preserveAspectRatio="xMidYMid meet"
+      style={{ maxWidth: size, maxHeight: size }}
       className={className}
       role="img"
       aria-hidden="true"
-      style={{ overflow: 'visible' }}
     >
-      <g fill={shape.tone}>
+      <g ref={groupRef} fill={shape.tone}>
         {shape.tail && <path d={shape.tail} opacity="0.75" />}
         {shape.dorsal && <path d={shape.dorsal} opacity="0.75" />}
         {shape.anal && <path d={shape.anal} opacity="0.75" />}
