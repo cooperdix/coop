@@ -27,8 +27,18 @@ export type Photo = {
   license: string | null;
 };
 
-/** Bumping this invalidates every cached answer. */
-const CACHE_VERSION = 4;
+/**
+ * Bumping this invalidates every cached answer.
+ *
+ * THIS MUST BE INCREMENTED WHENEVER THE SELECTION RULES BELOW CHANGE. Answers
+ * live in the visitor's browser for a month, and a cached answer short-circuits
+ * the lookup entirely — so improved rules that ship without a bump have no
+ * effect at all on anyone who has already used the site, which is exactly how
+ * a fixed bigeye tuna went on showing a yellowfin.
+ *
+ * 5: photographs must name the species they show; Commons search fallback.
+ */
+const CACHE_VERSION = 5;
 const CACHE_PREFIX = `llf.photo.v${CACHE_VERSION}.`;
 const CACHE_DAYS = 30;
 
@@ -70,6 +80,11 @@ const TITLE_OVERRIDES: Record<string, string | null> = {
   // about a fishery or a stocking programme rather than the animal, and the
   // pictures on them are of rivers, hatcheries and people. The species article
   // is the one with a photograph of the fish.
+  // These two share a species with their sea-run form, so a binomial match
+  // would happily return a picture of the other one.
+  'kokanee-salmon': 'Kokanee',
+  'sockeye-salmon': 'Sockeye salmon',
+
   'rainbow-trout': 'Oncorhynchus mykiss',
   'brown-trout': 'Salmo trutta',
   'brook-trout': 'Salvelinus fontinalis',
