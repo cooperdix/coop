@@ -103,7 +103,7 @@ export function FishPhoto({
         <small className="fish-credit">
           Photo:{' '}
           <a href={photo.pageUrl} target="_blank" rel="noopener noreferrer">
-            Wikipedia
+            Wikimedia
           </a>
           {photo.artist ? ` · ${photo.artist}` : ''}
           {photo.license ? ` · ${photo.license}` : ''}

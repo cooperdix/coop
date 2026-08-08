@@ -34,6 +34,8 @@ export function WaterHero({ water }: { water: Lake }) {
         name: water.name,
         state: water.state,
         waterType: water.water_type,
+        latitude: water.latitude,
+        longitude: water.longitude,
       },
       ctrl.signal,
     )
@@ -50,7 +52,7 @@ export function WaterHero({ water }: { water: Lake }) {
       live = false;
       ctrl.abort();
     };
-  }, [water.slug, water.name, water.state, water.water_type]);
+  }, [water.slug, water.name, water.state, water.water_type, water.latitude, water.longitude]);
 
   const point = useMemo(() => {
     if (water.latitude == null || water.longitude == null) return null;
@@ -80,7 +82,7 @@ export function WaterHero({ water }: { water: Lake }) {
             />
             <figcaption>
               <a href={photo.pageUrl} target="_blank" rel="noopener noreferrer">
-                Wikipedia
+                Wikimedia
               </a>
               {photo.artist ? ` · ${photo.artist}` : ''}
               {photo.license ? ` · ${photo.license}` : ''}
