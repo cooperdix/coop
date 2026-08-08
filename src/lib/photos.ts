@@ -218,6 +218,35 @@ async function imagesOnPage(title: string, want: number, signal: AbortSignal) {
 }
 
 /**
+ * The strings that identify this species and no other.
+ *
+ * The genus alone is useless here — Thunnus obesus and Thunnus albacares share
+ * it, and a bigeye article carries pictures of both — so matching is on the
+ * species epithet or on the full common name. Short epithets are dropped,
+ * since something like "keta" appears inside unrelated words; the binomial and
+ * the common name still cover those fish.
+ */
+function nameKeys(commonName: string, scientificName?: string | null): string[] {
+  const keys: string[] = [];
+  const common = commonName.toLowerCase().replace(/[^a-z ]/g, ' ').replace(/\s+/g, ' ').trim();
+  if (common) keys.push(common);
+
+  // Hybrid names are a formula rather than a binomial, so there is no epithet.
+  if (scientificName && !/\sx\s/i.test(scientificName)) {
+    const parts = scientificName.toLowerCase().replace(/[^a-z ]/g, ' ').split(/\s+/).filter(Boolean);
+    if (parts.length >= 2) {
+      keys.push(`${parts[0]} ${parts[1]}`);
+      if (parts[1].length >= 5) keys.push(parts[1]);
+    }
+  }
+  return keys;
+}
+
+/** Filenames use every separator there is; compare on plain words. */
+const normalise = (file: string) =>
+  file.toLowerCase().replace(/\.[a-z0-9]+$/, '').replace(/[^a-z0-9]+/g, ' ').trim();
+
+/**
  * How much a candidate looks like the whole fish, out of the water, side on.
  *
  * Shape does most of the work: a fish photographed whole from the side is a
@@ -225,10 +254,15 @@ async function imagesOnPage(title: string, want: number, signal: AbortSignal) {
  * glass tend to be square or tall. Filenames supply the rest — anglers and
  * fisheries staff name files remarkably literally.
  */
-function scoreFish(c: Candidate, names: string[]): number {
-  const f = c.file.toLowerCase().replace(/[_-]+/g, ' ');
+function scoreFish(c: Candidate, keys: string[]): number {
+  const f = normalise(c.file);
   const ratio = c.width / Math.max(1, c.height);
   let score = 0;
+
+  // The photograph has to be of this fish. Rewarding a name match but not
+  // requiring one let a picture of a different species on the same article
+  // win on shape alone, which is how a yellowfin ended up labelled bigeye.
+  if (!keys.some((k) => k && f.includes(k))) return -1000;
 
   // A whole fish side-on lands near 3:2 and runs out past 3:1 for a pike.
   if (ratio >= 1.25 && ratio <= 3.4) score += 40;
@@ -262,9 +296,6 @@ function scoreFish(c: Candidate, names: string[]): number {
   if (/(river|creek|stream|lake|reservoir|hatchery|pond bank|valley|falls|dam|landscape)/.test(f))
     score -= 28;
   if (/(painting|drawing|illustration|plate|engraving|lithograph|sketch|art)/.test(f)) score -= 45;
-
-  // Named after the fish it shows.
-  if (names.some((n) => n && f.includes(n.toLowerCase()))) score += 22;
 
   // Bigger originals are generally the article's real subject photo.
   if (c.width >= 800) score += 6;
@@ -309,6 +340,25 @@ const best = (cands: Candidate[], score: (c: Candidate) => number, floor: number
     : null;
 };
 
+/**
+ * Files on Commons whose name or description matches a search term.
+ *
+ * Requiring a photograph to name its species is what makes the picture
+ * trustworthy, but on its own it would cost coverage: plenty of articles
+ * illustrate a fish with a file named after the photographer or the river.
+ * Searching Commons directly recovers those, and does it with the species name
+ * as the query, so what comes back is already the right fish.
+ */
+async function searchCommons(query: string, want: number, signal: AbortSignal) {
+  const url =
+    `${COMMONS_API}?action=query&format=json&origin=*&generator=search` +
+    `&gsrnamespace=6&gsrlimit=24&gsrsearch=${encodeURIComponent(query)}` +
+    `&prop=imageinfo&iiprop=url|size|extmetadata` +
+    `&iiextmetadatafilter=Artist|LicenseShortName&iiurlwidth=${want}`;
+  const json = await getJson(url, signal);
+  return toCandidates(json?.query?.pages, want);
+}
+
 export type LookupInput = {
   slug: string;
   commonName: string;
@@ -345,7 +395,7 @@ export async function findPhoto(
     titles = [...new Set([scientificName, sentence, commonName].filter(Boolean))] as string[];
   }
 
-  const names = [commonName, scientificName ?? '', commonName.split(' ').slice(-1)[0]];
+  const keys = nameKeys(commonName, scientificName);
 
   await acquire();
   try {
@@ -354,12 +404,24 @@ export async function findPhoto(
       if (!cands.length) continue;
       // The floor keeps a page of maps and plates from yielding a bad photo
       // just because something had to win.
-      const found = best(cands, (c) => scoreFish(c, names), -12);
+      const found = best(cands, (c) => scoreFish(c, keys), -12);
       if (found) {
         write(slug, found);
         return found;
       }
     }
+
+    // Nothing on the article named this fish. Ask Commons directly, which is
+    // where the well-labelled specimen photographs live.
+    for (const q of [scientificName, commonName].filter(Boolean) as string[]) {
+      const cands = await searchCommons(q, want, signal);
+      const found = best(cands, (c) => scoreFish(c, keys), -12);
+      if (found) {
+        write(slug, found);
+        return found;
+      }
+    }
+
     write(slug, null);
     return null;
   } finally {
