@@ -2,14 +2,32 @@ import { useMemo, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { useSpeciesList } from '../lib/queries';
 import { FishPhoto } from '../components/FishPhoto';
-import { SearchIcon, FilterIcon, PinIcon } from '../components/Icons';
+import { SearchIcon, FilterIcon, PinIcon, ChevronRight } from '../components/Icons';
 import { useGeo, distanceMiles } from '../lib/geo';
+import { LayoutToggle, type Layout } from '../components/LayoutToggle';
 
 export function SpeciesPage() {
   const { data, loading, error } = useSpeciesList();
   const [q, setQ] = useState('');
   const [cat, setCat] = useState('all');
   const [radius, setRadius] = useState(100);
+
+  // Grid or list, remembered so the choice survives a reload.
+  const [layout, setLayout] = useState<Layout>(() => {
+    try {
+      return localStorage.getItem('llf.species.layout') === 'list' ? 'list' : 'grid';
+    } catch {
+      return 'grid';
+    }
+  });
+  const chooseLayout = (next: Layout) => {
+    setLayout(next);
+    try {
+      localStorage.setItem('llf.species.layout', next);
+    } catch {
+      // Not fatal; the choice just will not persist.
+    }
+  };
   const geo = useGeo();
   const here = geo.state.status === 'ready' ? geo.state.coords : null;
 
@@ -111,6 +129,8 @@ export function SpeciesPage() {
           </button>
         )}
 
+        <LayoutToggle layout={layout} onChange={chooseLayout} />
+
         <span className="count">
           {loading ? 'Loading…' : `${filtered.length} species${here ? ' near you' : ''}`}
         </span>
@@ -141,29 +161,58 @@ export function SpeciesPage() {
         </div>
       )}
 
-      <div className="grid">
-        {filtered.map((s) => (
-          <Link key={s.slug} to={`/species/${s.slug}`} className="card species-card">
-            <FishPhoto
-              slug={s.slug}
-              commonName={s.common_name}
-              scientificName={s.scientific_name}
-              illustration={s.illustration}
-              size={150}
-              className="art"
-            />
-            <h3>{s.common_name}</h3>
-            {s.scientific_name && <div className="sci">{s.scientific_name}</div>}
-            <div className="n">
-              {here && s.nearCount != null
-                ? `${s.nearCount} water${s.nearCount === 1 ? '' : 's'} near you`
-                : s.lakeCount > 0
-                  ? `${s.lakeCount} water${s.lakeCount === 1 ? '' : 's'} in this guide`
-                  : 'No catalogued waters yet'}
-            </div>
-          </Link>
-        ))}
-      </div>
+      {layout === 'grid' ? (
+        <div className="grid">
+          {filtered.map((s) => (
+            <Link key={s.slug} to={`/species/${s.slug}`} className="card species-card">
+              <FishPhoto
+                slug={s.slug}
+                commonName={s.common_name}
+                scientificName={s.scientific_name}
+                illustration={s.illustration}
+                size={150}
+                className="art"
+              />
+              <h3>{s.common_name}</h3>
+              {s.scientific_name && <div className="sci">{s.scientific_name}</div>}
+              <div className="n">
+                {here && s.nearCount != null
+                  ? `${s.nearCount} water${s.nearCount === 1 ? '' : 's'} near you`
+                  : s.lakeCount > 0
+                    ? `${s.lakeCount} water${s.lakeCount === 1 ? '' : 's'} in this guide`
+                    : 'No catalogued waters yet'}
+              </div>
+            </Link>
+          ))}
+        </div>
+      ) : (
+        <div className="card species-rows">
+          {filtered.map((s) => (
+            <Link key={s.slug} to={`/species/${s.slug}`} className="species-row">
+              <FishPhoto
+                slug={s.slug}
+                commonName={s.common_name}
+                scientificName={s.scientific_name}
+                illustration={s.illustration}
+                size={78}
+              />
+              <span className="species-row-name">
+                <span className="nm">{s.common_name}</span>
+                {s.scientific_name && <span className="sci">{s.scientific_name}</span>}
+              </span>
+              <span className="species-row-group">{s.category}</span>
+              <span className="species-row-count">
+                {here && s.nearCount != null
+                  ? `${s.nearCount} near you`
+                  : s.lakeCount > 0
+                    ? `${s.lakeCount} waters`
+                    : '—'}
+              </span>
+              <ChevronRight className="go" />
+            </Link>
+          ))}
+        </div>
+      )}
     </>
   );
 }

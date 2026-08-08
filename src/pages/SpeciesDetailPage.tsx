@@ -40,6 +40,8 @@ export function SpeciesDetailPage() {
           scientificName={species.scientific_name}
           illustration={species.illustration}
           size={210}
+          priority
+          showCredit
         />
         <div style={{ flex: '1 1 320px' }}>
           <h1>{species.common_name}</h1>

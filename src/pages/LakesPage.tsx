@@ -1,5 +1,5 @@
 import { useMemo, useState } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
+import { Link, useNavigate, useSearchParams } from 'react-router-dom';
 import { useLakes } from '../lib/queries';
 import { MapView } from '../components/MapView';
 import { SearchIcon, PinIcon, FilterIcon } from '../components/Icons';
@@ -8,9 +8,19 @@ import { useGeo, distanceMiles, formatMiles } from '../lib/geo';
 export function LakesPage() {
   const { data, loading, error } = useLakes();
   const navigate = useNavigate();
+  // The bar links straight into a filtered view, so the URL owns the water
+  // type rather than component state — a shared link lands on the same page.
+  const [params, setParams] = useSearchParams();
+  const wtype = params.get('type') ?? 'all';
+  const setWtype = (t: string) => {
+    const next = new URLSearchParams(params);
+    if (t === 'all') next.delete('type');
+    else next.set('type', t);
+    setParams(next, { replace: true });
+  };
+
   const [q, setQ] = useState('');
   const [state, setState] = useState('all');
-  const [wtype, setWtype] = useState('all');
   const [view, setView] = useState<'both' | 'list'>('both');
   const [radius, setRadius] = useState(100);
   const geo = useGeo();

@@ -2,6 +2,7 @@ import { Link, useParams } from 'react-router-dom';
 import { useLake } from '../lib/queries';
 import { FishPhoto } from '../components/FishPhoto';
 import { ChevronLeft, ChevronRight } from '../components/Icons';
+import { WaterHero } from '../components/WaterHero';
 
 const nf = new Intl.NumberFormat('en-US');
 
@@ -36,6 +37,8 @@ export function LakeDetailPage() {
       <Link to="/" className="crumb">
         <ChevronLeft size={14} /> All waters
       </Link>
+
+      <WaterHero water={lake} />
 
       <div className="card detail-head">
         <div style={{ flex: '1 1 340px' }}>

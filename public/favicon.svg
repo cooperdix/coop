@@ -1,0 +1,42 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" role="img" aria-label="Little Lake Fishing">
+  <defs>
+    <!-- Deep water, lit from the top left, the way a lake reads from a boat. -->
+    <radialGradient id="water" cx="34%" cy="24%" r="82%">
+      <stop offset="0%" stop-color="#4db8ff"/>
+      <stop offset="45%" stop-color="#0a84ff"/>
+      <stop offset="100%" stop-color="#012a5e"/>
+    </radialGradient>
+    <linearGradient id="fish" x1="14%" y1="18%" x2="82%" y2="88%">
+      <stop offset="0%" stop-color="#ffffff"/>
+      <stop offset="55%" stop-color="#e8f4ff"/>
+      <stop offset="100%" stop-color="#a9d4ff"/>
+    </linearGradient>
+    <linearGradient id="sheen" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" stop-color="#ffffff" stop-opacity="0.4"/>
+      <stop offset="60%" stop-color="#ffffff" stop-opacity="0"/>
+    </linearGradient>
+    <!-- Keeps the ripples inside the disc without a second circle path. -->
+    <clipPath id="disc"><circle cx="32" cy="32" r="32"/></clipPath>
+  </defs>
+
+  <circle cx="32" cy="32" r="32" fill="url(#water)"/>
+  <circle cx="32" cy="32" r="32" fill="url(#sheen)"/>
+
+  <g clip-path="url(#disc)" fill="none" stroke="#ffffff" stroke-linecap="round">
+    <!-- Surface chop below the fish, fading with distance. -->
+    <path d="M2 47c5-3.4 10-3.4 15 0s10 3.4 15 0 10-3.4 15 0 10 3.4 15 0" stroke-opacity="0.42" stroke-width="2.4"/>
+    <path d="M-2 55c5-3 10-3 15 0s10 3 15 0 10-3 15 0 10 3 15 0" stroke-opacity="0.22" stroke-width="2"/>
+  </g>
+
+  <!-- A trout coming out of the water, cut so the tail stays under the chop. -->
+  <g transform="rotate(-24 32 30)">
+    <path
+      d="M14 30c5-7.5 13-11.5 22-11.5 6.6 0 12 1.9 15.6 5.1l4.4 1.2-4.4 1.2C48 29.2 42.6 31.1 36 31.1c-9 0-17-4-22-1.1z"
+      fill="url(#fish)"/>
+    <path d="M51.6 23.6L59 17.4l-1.4 6.8L59 31z" fill="url(#fish)" opacity="0.85"/>
+    <path d="M30 19.6l2.6-5.4 4.6 4.2 3.4-4 3.4 5.2z" fill="url(#fish)" opacity="0.7"/>
+    <path d="M28 31.6c3.2 1 5.6 2.9 7 5.6-3.6-.5-6.4-2.2-8.2-4.4z" fill="#7fc0ff" opacity="0.8"/>
+    <circle cx="21.5" cy="27.4" r="2.5" fill="#012a5e"/>
+    <circle cx="22.4" cy="26.6" r="0.9" fill="#ffffff"/>
+  </g>
+</svg>

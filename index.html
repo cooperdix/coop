@@ -3,16 +3,18 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Little Lake Fishing — Lakes &amp; Fish Species of the United States</title>
+    <title>Little Lake Fishing — Waters &amp; Fish Species of the United States</title>
     <meta
       name="description"
-      content="Browse notable fishing lakes across all fifty states and see exactly which fish species you can catch in each one, plus bait, season and access notes."
+      content="Browse notable fishing waters across all fifty states and see exactly which fish species you can catch in each one, plus bait, season and access notes."
     />
-    <meta name="theme-color" content="#2f4530" />
-    <link
-      rel="icon"
-      href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 48 48'%3E%3Ccircle cx='24' cy='24' r='23' fill='%232f4530'/%3E%3Cpath d='M8 25c4-6 11-9 18-9 6 0 11 2 14 5l4 1-4 1c-3 3-8 5-14 5-7 0-14-3-18-3Z' fill='%23e8dfc2'/%3E%3Cpath d='M40 22l6-5-1 5 1 5Z' fill='%23e8dfc2'/%3E%3Ccircle cx='15' cy='23' r='2' fill='%232f4530'/%3E%3C/svg%3E"
-    />
+    <!-- Matches the two page grounds, so the browser chrome does not flash the
+         wrong colour before the stylesheet lands. -->
+    <meta name="theme-color" content="#f5f5f7" media="(prefers-color-scheme: light)" />
+    <meta name="theme-color" content="#000000" media="(prefers-color-scheme: dark)" />
+
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <link rel="apple-touch-icon" href="/favicon.svg" />
   </head>
   <body>
     <div id="root"></div>

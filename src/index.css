@@ -1,55 +1,86 @@
-/* Little Lake Fishing — a field-guide visual system built on water.
-   Cool paper, deep lake blue, shoal teal, with a warm ochre kept only
-   for markers and alerts so they stay readable against all that blue. */
+/* Little Lake Fishing.
+
+   Built the way Apple builds a marketing site: one typeface at several weights,
+   a near-monochrome ground, a single blue carrying every action, hairline
+   rules instead of borders, and a lot of air. Surfaces are translucent and
+   blurred so the water moving behind the page shows through them without ever
+   getting between the reader and the words. */
 
 :root {
-  --paper: #f1f5fa;
-  --paper-2: #e4edf6;
-  --card: #ffffff;
-  --ink: #12212e;
-  --ink-2: #3c5165;
-  --ink-3: #71879d;
-  --line: #cddce9;
-  --line-2: #aec4d9;
+  color-scheme: light;
 
-  --forest: #14507e;
-  --forest-2: #256d9f;
-  --moss: #3d8fb0;
-  --water: #0f3a5c;
-  --water-2: #2a6a8c;
-  --rust: #b4602c;
-  --rust-2: #965024;
-  --gold: #b98b38;
+  --bg: #f5f5f7;
+  --surface: rgba(255, 255, 255, 0.72);
+  --surface-solid: #ffffff;
+  --surface-raised: rgba(255, 255, 255, 0.88);
 
-  --radius: 10px;
-  --shadow: 0 1px 2px rgba(18, 33, 46, 0.07), 0 4px 14px rgba(18, 33, 46, 0.08);
-  --shadow-lg: 0 2px 6px rgba(18, 33, 46, 0.1), 0 16px 40px rgba(18, 33, 46, 0.16);
+  --ink: #1d1d1f;
+  --ink-2: #424245;
+  --ink-3: #6e6e73;
+  --ink-4: #86868b;
 
-  --serif: 'Iowan Old Style', 'Palatino Linotype', Palatino, 'Book Antiqua', Georgia, serif;
-  --sans: ui-sans-serif, system-ui, -apple-system, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+  --hairline: rgba(0, 0, 0, 0.1);
+  --hairline-2: rgba(0, 0, 0, 0.16);
+
+  --accent: #0071e3;
+  --accent-hover: #0077ed;
+  --accent-soft: rgba(0, 113, 227, 0.1);
+  --on-accent: #ffffff;
+
+  --r-sm: 10px;
+  --r-md: 14px;
+  --r-lg: 18px;
+  --r-xl: 22px;
+
+  --shadow: 0 1px 2px rgba(0, 0, 0, 0.04), 0 4px 16px rgba(0, 0, 0, 0.06);
+  --shadow-lg: 0 4px 12px rgba(0, 0, 0, 0.06), 0 18px 44px rgba(0, 0, 0, 0.11);
+
+  --sans:
+    -apple-system, BlinkMacSystemFont, 'SF Pro Display', 'SF Pro Text', 'Helvetica Neue',
+    'Segoe UI', Roboto, Arial, sans-serif;
+  --mono: ui-monospace, 'SF Mono', SFMono-Regular, Menlo, monospace;
+
+  --nav-h: 48px;
 }
 
 @media (prefers-color-scheme: dark) {
-  :root {
-    --paper: #0d1620;
-    --paper-2: #131f2c;
-    --card: #16232f;
-    --ink: #e2ecf6;
-    --ink-2: #adc0d2;
-    --ink-3: #7f93a7;
-    --line: #24384c;
-    --line-2: #344c64;
-    --forest: #79b4e4;
-    --forest-2: #97caf1;
-    --moss: #6cc0da;
-    --water: #8ec5dd;
-    --water-2: #a9d7ea;
-    --rust: #e08a5c;
-    --rust-2: #eda77e;
-    --gold: #d9ae63;
-    --shadow: 0 1px 2px rgba(0, 0, 0, 0.42), 0 4px 14px rgba(0, 0, 0, 0.45);
-    --shadow-lg: 0 2px 6px rgba(0, 0, 0, 0.45), 0 16px 40px rgba(0, 0, 0, 0.6);
+  :root:not([data-theme='light']) {
+    color-scheme: dark;
+    --bg: #000000;
+    --surface: rgba(29, 29, 31, 0.68);
+    --surface-solid: #1d1d1f;
+    --surface-raised: rgba(44, 44, 46, 0.82);
+    --ink: #f5f5f7;
+    --ink-2: #d2d2d7;
+    --ink-3: #a1a1a6;
+    --ink-4: #86868b;
+    --hairline: rgba(255, 255, 255, 0.12);
+    --hairline-2: rgba(255, 255, 255, 0.2);
+    --accent: #2997ff;
+    --accent-hover: #58aeff;
+    --accent-soft: rgba(41, 151, 255, 0.16);
+    --shadow: 0 1px 2px rgba(0, 0, 0, 0.5), 0 4px 16px rgba(0, 0, 0, 0.45);
+    --shadow-lg: 0 4px 12px rgba(0, 0, 0, 0.5), 0 18px 44px rgba(0, 0, 0, 0.6);
   }
+}
+
+:root[data-theme='dark'] {
+  color-scheme: dark;
+  --bg: #000000;
+  --surface: rgba(29, 29, 31, 0.68);
+  --surface-solid: #1d1d1f;
+  --surface-raised: rgba(44, 44, 46, 0.82);
+  --ink: #f5f5f7;
+  --ink-2: #d2d2d7;
+  --ink-3: #a1a1a6;
+  --ink-4: #86868b;
+  --hairline: rgba(255, 255, 255, 0.12);
+  --hairline-2: rgba(255, 255, 255, 0.2);
+  --accent: #2997ff;
+  --accent-hover: #58aeff;
+  --accent-soft: rgba(41, 151, 255, 0.16);
+  --shadow: 0 1px 2px rgba(0, 0, 0, 0.5), 0 4px 16px rgba(0, 0, 0, 0.45);
+  --shadow-lg: 0 4px 12px rgba(0, 0, 0, 0.5), 0 18px 44px rgba(0, 0, 0, 0.6);
 }
 
 * { box-sizing: border-box; }
@@ -58,171 +89,235 @@ html, body, #root { height: 100%; }
 
 body {
   margin: 0;
-  background-color: var(--paper);
-  /* Faint paper grain so large flat areas do not read as flat screen. */
-  background-image:
-    radial-gradient(circle at 20% 30%, rgba(37, 109, 159, 0.05), transparent 55%),
-    radial-gradient(circle at 80% 70%, rgba(15, 58, 92, 0.05), transparent 55%);
+  background: var(--bg);
   color: var(--ink);
   font-family: var(--sans);
-  font-size: 16px;
-  line-height: 1.55;
+  font-size: 17px;
+  line-height: 1.47;
+  letter-spacing: -0.011em;
   -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
 }
+
+/* The live water sheet: fixed behind everything, never interactive, invisible
+   to assistive technology. */
+.water-bg {
+  position: fixed;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  display: block;
+  z-index: 0;
+  pointer-events: none;
+}
+
+.app {
+  position: relative;
+  z-index: 1;
+  display: flex;
+  flex-direction: column;
+  min-height: 100%;
+}
+
+h1, h2, h3 {
+  margin: 0;
+  font-weight: 600;
+  line-height: 1.08;
+  letter-spacing: -0.022em;
+  text-wrap: balance;
+}
+p { margin: 0; }
 
 a { color: inherit; text-decoration: none; }
+.linkish { color: var(--accent); }
+.linkish:hover { text-decoration: underline; }
 
-h1, h2, h3, h4 {
-  font-family: var(--serif);
-  font-weight: 600;
-  line-height: 1.15;
-  margin: 0;
-  letter-spacing: -0.01em;
+:focus-visible { outline: 3px solid var(--accent); outline-offset: 3px; border-radius: 6px; }
+
+@media (prefers-reduced-motion: reduce) {
+  * { transition: none !important; animation: none !important; }
 }
 
-/* ---------- Layout shell ---------- */
-
-.app { display: flex; flex-direction: column; min-height: 100%; }
+/* --------------------------------------------------------------- the bar */
 
 .masthead {
   position: sticky;
   top: 0;
-  z-index: 40;
-  background: linear-gradient(180deg, var(--forest) 0%, #0b3556 100%);
-  color: #eef5fb;
-  border-bottom: 3px solid var(--gold);
-  box-shadow: var(--shadow);
+  z-index: 30;
+  background: color-mix(in srgb, var(--bg) 72%, transparent);
+  backdrop-filter: saturate(180%) blur(20px);
+  -webkit-backdrop-filter: saturate(180%) blur(20px);
+  border-bottom: 1px solid var(--hairline);
 }
-@media (prefers-color-scheme: dark) {
-  .masthead { background: linear-gradient(180deg, #12293c 0%, #0d1c29 100%); }
-}
-
 .masthead-inner {
-  max-width: 1240px;
+  max-width: 1024px;
   margin: 0 auto;
-  padding: 0.7rem 1.25rem;
+  padding: 0 1.25rem;
+  height: var(--nav-h);
   display: flex;
   align-items: center;
-  gap: 1.25rem;
-  flex-wrap: wrap;
 }
 
-.brand { display: flex; align-items: center; gap: 0.6rem; }
-.brand-mark { flex: none; opacity: 0.95; }
-.brand-text { display: flex; flex-direction: column; line-height: 1.05; }
-.brand-name {
-  font-family: var(--serif);
-  font-size: 1.4rem;
-  font-weight: 700;
-  letter-spacing: 0.01em;
-  color: #f4f9fd;
-}
-.brand-sub {
-  font-size: 0.68rem;
-  text-transform: uppercase;
-  letter-spacing: 0.14em;
-  color: rgba(238, 245, 251, 0.66);
-}
+/* The mark is the leftmost item, small and quiet, exactly as a wordmark sits
+   at the left of an Apple bar. */
+.brand { display: flex; align-items: center; gap: 0.5rem; flex: none; }
+.brand-mark { width: 20px; height: 20px; color: var(--ink); flex: none; }
+.brand-text { display: flex; flex-direction: column; min-width: 0; }
+.brand-name { font-size: 0.82rem; font-weight: 500; letter-spacing: -0.01em; white-space: nowrap; }
+.brand-sub { display: none; }
 
-.nav { display: flex; gap: 0.35rem; margin-left: auto; }
+/* Desktop: one evenly distributed row of plain links, all the same weight and
+   size, spread across the full width rather than clustered at one end. */
+.nav {
+  display: flex;
+  flex: 1;
+  justify-content: space-evenly;
+  align-items: center;
+  gap: 0.5rem;
+  margin: 0 1.5rem;
+}
 .nav a {
-  padding: 0.42rem 0.85rem;
-  border-radius: 999px;
-  font-size: 0.9rem;
-  font-weight: 600;
-  color: rgba(238, 245, 251, 0.8);
-  border: 1px solid transparent;
-  transition: background 0.15s, color 0.15s, border-color 0.15s;
+  padding: 0.35rem 0.25rem;
+  font-size: 0.75rem;
+  font-weight: 400;
+  letter-spacing: -0.005em;
+  color: var(--ink-2);
+  white-space: nowrap;
+  opacity: 0.88;
+  transition: opacity 0.18s, color 0.18s;
 }
-.nav a:hover { background: rgba(255, 255, 255, 0.09); color: #fff; }
-.nav a.active {
-  background: rgba(255, 255, 255, 0.14);
-  color: #fff;
-  border-color: rgba(255, 255, 255, 0.22);
+.nav a:hover { opacity: 1; color: var(--ink); }
+.nav a.active { color: var(--ink); opacity: 1; }
+
+/* The hamburger is desktop-hidden and becomes the whole navigation on a
+   phone, where a spread-out row of links has nowhere to go. */
+.nav-toggle {
+  display: none;
+  margin-left: auto;
+  width: 34px;
+  height: 34px;
+  padding: 0;
+  border: 0;
+  background: none;
+  color: var(--ink);
+  cursor: pointer;
+  align-items: center;
+  justify-content: center;
+}
+.nav-toggle span {
+  position: relative;
+  display: block;
+  width: 17px;
+  height: 1.5px;
+  border-radius: 2px;
+  background: currentColor;
+  transition: transform 0.28s cubic-bezier(0.4, 0, 0.2, 1), opacity 0.18s;
+}
+.nav-toggle span::before,
+.nav-toggle span::after {
+  content: '';
+  position: absolute;
+  left: 0;
+  width: 17px;
+  height: 1.5px;
+  border-radius: 2px;
+  background: currentColor;
+  transition: transform 0.28s cubic-bezier(0.4, 0, 0.2, 1);
+}
+.nav-toggle span::before { top: -5px; }
+.nav-toggle span::after { top: 5px; }
+/* Open state folds the three bars into a cross. */
+.nav-toggle[aria-expanded='true'] span { background: transparent; }
+.nav-toggle[aria-expanded='true'] span::before { transform: translateY(5px) rotate(45deg); }
+.nav-toggle[aria-expanded='true'] span::after { transform: translateY(-5px) rotate(-45deg); }
+
+@media (max-width: 720px) {
+  .nav-toggle { display: flex; }
+  .nav {
+    position: fixed;
+    inset: var(--nav-h) 0 auto 0;
+    margin: 0;
+    flex-direction: column;
+    justify-content: flex-start;
+    align-items: stretch;
+    gap: 0;
+    padding: 0.5rem 1.25rem 1.5rem;
+    background: color-mix(in srgb, var(--bg) 88%, transparent);
+    backdrop-filter: saturate(180%) blur(20px);
+    -webkit-backdrop-filter: saturate(180%) blur(20px);
+    border-bottom: 1px solid var(--hairline);
+    /* Collapsed by default, and genuinely removed from the tab order rather
+       than merely moved off screen. */
+    transform: translateY(-8px);
+    opacity: 0;
+    visibility: hidden;
+    transition: transform 0.28s cubic-bezier(0.4, 0, 0.2, 1), opacity 0.22s, visibility 0.28s;
+  }
+  .nav[data-open='true'] { transform: translateY(0); opacity: 1; visibility: visible; }
+  .nav a {
+    padding: 0.85rem 0.25rem;
+    font-size: 1.35rem;
+    font-weight: 500;
+    letter-spacing: -0.02em;
+    border-bottom: 1px solid var(--hairline);
+  }
+  .nav a:last-child { border-bottom: 0; }
 }
 
-.main { flex: 1; width: 100%; max-width: 1240px; margin: 0 auto; padding: 1.5rem 1.25rem 4rem; }
+.main {
+  flex: 1;
+  width: 100%;
+  max-width: 1024px;
+  margin: 0 auto;
+  padding: 3.25rem 1.25rem 5rem;
+}
 
 .footer {
-  border-top: 1px solid var(--line);
-  padding: 1.5rem 1.25rem 2.5rem;
-  color: var(--ink-3);
-  font-size: 0.82rem;
+  border-top: 1px solid var(--hairline);
+  padding: 1.75rem 1.25rem 3rem;
+  color: var(--ink-4);
+  font-size: 0.78rem;
+  line-height: 1.5;
   text-align: center;
+  max-width: 62ch;
+  margin: 0 auto;
 }
 
-/* ---------- Generic pieces ---------- */
+/* ----------------------------------------------------------------- pages */
 
-.page-head { margin-bottom: 1.25rem; }
-.page-head h1 { font-size: clamp(1.7rem, 3.4vw, 2.5rem); }
-.page-head p { color: var(--ink-2); margin: 0.4rem 0 0; max-width: 62ch; }
-
-.crumb {
-  display: inline-flex;
-  align-items: center;
-  gap: 0.35rem;
-  font-size: 0.85rem;
-  font-weight: 600;
+.page-head { margin-bottom: 2rem; text-align: center; }
+.page-head h1 { font-size: clamp(2.4rem, 6vw, 3.5rem); letter-spacing: -0.03em; }
+.page-head p {
   color: var(--ink-3);
-  margin-bottom: 0.9rem;
+  margin: 0.75rem auto 0;
+  max-width: 46ch;
+  font-size: 1.05rem;
+  line-height: 1.5;
 }
-.crumb:hover { color: var(--rust); }
-
-.card {
-  background: var(--card);
-  border: 1px solid var(--line);
-  border-radius: var(--radius);
-  box-shadow: var(--shadow);
-}
-
-.tag {
-  display: inline-flex;
-  align-items: center;
-  gap: 0.3rem;
-  padding: 0.16rem 0.55rem;
-  border-radius: 999px;
-  font-size: 0.72rem;
-  font-weight: 700;
-  letter-spacing: 0.02em;
-  border: 1px solid var(--line-2);
-  color: var(--ink-2);
-  background: var(--paper-2);
-  white-space: nowrap;
-}
-.tag-abundant { border-color: var(--forest-2); color: var(--forest); background: rgba(37, 109, 159, 0.11); }
-.tag-state { border-color: var(--water-2); color: var(--water); background: rgba(42, 106, 140, 0.11); }
-
-.spinner { padding: 3rem 0; text-align: center; color: var(--ink-3); }
-.error {
-  padding: 1rem 1.15rem;
-  border-radius: var(--radius);
-  border: 1px solid var(--rust);
-  background: rgba(180, 96, 44, 0.09);
-  color: var(--rust-2);
-}
-.empty { padding: 2.5rem 1rem; text-align: center; color: var(--ink-3); }
-
-/* ---------- Controls ---------- */
 
 .controls {
   display: flex;
-  gap: 0.7rem;
+  gap: 0.5rem;
   flex-wrap: wrap;
   align-items: center;
-  margin-bottom: 1.1rem;
+  justify-content: center;
+  margin-bottom: 1.75rem;
 }
-
 .field {
   display: flex;
   align-items: center;
-  gap: 0.5rem;
-  background: var(--card);
-  border: 1px solid var(--line-2);
-  border-radius: 999px;
-  padding: 0.45rem 0.9rem;
-  box-shadow: var(--shadow);
+  gap: 0.45rem;
+  background: var(--surface);
+  backdrop-filter: blur(20px) saturate(180%);
+  -webkit-backdrop-filter: blur(20px) saturate(180%);
+  border: 1px solid var(--hairline);
+  border-radius: 980px;
+  padding: 0.42rem 0.95rem;
+  color: var(--ink-3);
+  transition: border-color 0.18s, box-shadow 0.18s;
 }
-.field:focus-within { border-color: var(--forest-2); box-shadow: 0 0 0 3px rgba(37, 109, 159, 0.18); }
+.field:focus-within { border-color: var(--accent); box-shadow: 0 0 0 4px var(--accent-soft); }
+.field svg { flex: none; width: 15px; height: 15px; }
 .field input, .field select {
   border: 0;
   background: transparent;
@@ -232,97 +327,91 @@ h1, h2, h3, h4 {
   outline: none;
   min-width: 0;
 }
-.field input { width: min(38vw, 260px); }
+.field input { width: min(42vw, 230px); }
 .field select { cursor: pointer; }
-.field svg { flex: none; color: var(--ink-3); }
 
-.count { margin-left: auto; color: var(--ink-3); font-size: 0.86rem; font-weight: 600; }
-
-.toggle { display: inline-flex; border: 1px solid var(--line-2); border-radius: 999px; overflow: hidden; background: var(--card); box-shadow: var(--shadow); }
-.toggle button {
+.near-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  padding: 0.5rem 1.05rem;
   border: 0;
+  border-radius: 980px;
+  background: var(--accent);
+  color: var(--on-accent);
+  font: inherit;
+  font-size: 0.9rem;
+  cursor: pointer;
+  transition: background 0.18s, transform 0.18s;
+}
+.near-btn:hover { background: var(--accent-hover); }
+.near-btn:active { transform: scale(0.97); }
+.near-btn.near-btn-quiet {
   background: transparent;
+  color: var(--accent);
+  border: 1px solid var(--hairline-2);
+}
+.near-btn.near-btn-quiet:hover { background: var(--accent-soft); }
+
+.toggle { display: inline-flex; padding: 2px; border-radius: 980px; background: var(--accent-soft); }
+.toggle button {
+  padding: 0.34rem 0.9rem;
+  border: 0;
+  border-radius: 980px;
+  background: transparent;
+  color: var(--ink-2);
   font: inherit;
   font-size: 0.86rem;
-  font-weight: 700;
-  color: var(--ink-2);
-  padding: 0.45rem 0.95rem;
   cursor: pointer;
+  transition: background 0.18s, color 0.18s;
 }
-.toggle button[aria-pressed='true'] { background: var(--forest); color: #f2f8fd; }
-
-/* ---------- Map ---------- */
-
-.map-wrap {
-  position: relative;
-  height: min(62vh, 560px);
-  border-radius: var(--radius);
-  overflow: hidden;
-  border: 1px solid var(--line-2);
-  box-shadow: var(--shadow-lg);
-  margin-bottom: 1.25rem;
+.toggle button[aria-pressed='true'] {
+  background: var(--surface-raised);
+  color: var(--ink);
+  box-shadow: var(--shadow);
 }
-.map-wrap .mapboxgl-map { font: inherit; }
-.map-missing {
-  height: 100%;
-  display: grid;
-  place-items: center;
+
+.count {
+  width: 100%;
   text-align: center;
-  padding: 2rem;
-  background: var(--paper-2);
-  color: var(--ink-2);
-}
-.map-missing code {
-  background: var(--card);
-  border: 1px solid var(--line);
-  border-radius: 5px;
-  padding: 0.1rem 0.35rem;
-  font-size: 0.85em;
+  color: var(--ink-4);
+  font-size: 0.82rem;
+  font-variant-numeric: tabular-nums;
 }
 
-.map-pin {
-  width: 14px;
-  height: 14px;
-  border-radius: 50%;
-  background: var(--rust);
-  border: 2.5px solid #f7fbfe;
-  box-shadow: 0 1px 5px rgba(0, 0, 0, 0.45);
-  cursor: pointer;
-  transition: transform 0.12s;
-}
-.map-pin:hover { transform: scale(1.45); }
+/* ----------------------------------------------------------------- cards */
 
-.mapboxgl-popup-content {
-  font-family: var(--sans);
-  border-radius: 8px;
-  padding: 0.7rem 0.85rem;
-  box-shadow: var(--shadow-lg);
+.card {
+  background: var(--surface);
+  backdrop-filter: blur(24px) saturate(180%);
+  -webkit-backdrop-filter: blur(24px) saturate(180%);
+  border: 1px solid var(--hairline);
+  border-radius: var(--r-xl);
+  box-shadow: var(--shadow);
 }
-.popup-name { font-family: var(--serif); font-weight: 700; font-size: 1rem; color: #12212e; }
-.popup-meta { font-size: 0.78rem; color: #4e6274; margin-top: 0.1rem; }
-.popup-link { display: inline-block; margin-top: 0.45rem; font-size: 0.8rem; font-weight: 700; color: #14507e; }
-
-/* ---------- Lake + species grids ---------- */
-
-.grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(268px, 1fr));
-  gap: 0.9rem;
+/* Without a backdrop filter a translucent card over moving water is unreadable,
+   so those browsers get an opaque one. */
+@supports not ((backdrop-filter: blur(1px)) or (-webkit-backdrop-filter: blur(1px))) {
+  .card, .field, .masthead, .nav, .map-wrap, .notice { background: var(--surface-solid); }
 }
+
+.grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(250px, 1fr)); gap: 1rem; }
 
 .lake-card {
   display: flex;
   flex-direction: column;
-  padding: 1rem 1.05rem;
-  transition: transform 0.14s, box-shadow 0.14s, border-color 0.14s;
+  padding: 1.35rem 1.4rem;
+  color: inherit;
+  transition: transform 0.24s cubic-bezier(0.25, 0.1, 0.25, 1), box-shadow 0.24s;
 }
-.lake-card:hover { transform: translateY(-2px); box-shadow: var(--shadow-lg); border-color: var(--line-2); }
-.lake-card h3 { font-size: 1.12rem; margin-bottom: 0.15rem; }
-.lake-card .where { font-size: 0.82rem; color: var(--ink-3); font-weight: 600; }
+.lake-card:hover { transform: translateY(-4px); box-shadow: var(--shadow-lg); }
+.lake-card h3 { font-size: 1.2rem; letter-spacing: -0.021em; }
+.lake-card .where { font-size: 0.82rem; color: var(--ink-4); margin-top: 0.2rem; }
 .lake-card .blurb {
-  font-size: 0.87rem;
-  color: var(--ink-2);
-  margin: 0.55rem 0 0.8rem;
+  font-size: 0.9rem;
+  line-height: 1.45;
+  color: var(--ink-3);
+  margin: 0.85rem 0 1rem;
   display: -webkit-box;
   -webkit-line-clamp: 3;
   -webkit-box-orient: vertical;
@@ -330,241 +419,553 @@ h1, h2, h3, h4 {
 }
 .lake-card .fish-row {
   margin-top: auto;
-  display: flex;
-  align-items: center;
-  gap: 0.3rem;
-  padding-top: 0.7rem;
-  border-top: 1px dashed var(--line);
-  color: var(--ink-3);
+  padding-top: 0.9rem;
+  border-top: 1px solid var(--hairline);
+  color: var(--ink-4);
   font-size: 0.8rem;
-  font-weight: 700;
 }
+.wtags { display: flex; flex-wrap: wrap; gap: 0.4rem; margin-top: 0.7rem; }
+.lake-card .wtype { align-self: flex-start; }
 
 .species-card {
   display: flex;
   flex-direction: column;
-  align-items: flex-start;
-  padding: 1rem 1.05rem 1.1rem;
-  transition: transform 0.14s, box-shadow 0.14s;
+  align-items: center;
+  padding: 1.35rem 1.1rem;
+  color: inherit;
+  text-align: center;
+  transition: transform 0.24s cubic-bezier(0.25, 0.1, 0.25, 1), box-shadow 0.24s;
 }
-.species-card:hover { transform: translateY(-2px); box-shadow: var(--shadow-lg); }
-.species-card .art { align-self: center; margin: 0.2rem 0 0.5rem; }
+.species-card:hover { transform: translateY(-4px); box-shadow: var(--shadow-lg); }
+.species-card h3 { font-size: 1.06rem; margin-top: 0.9rem; }
+.species-card .sci { font-size: 0.8rem; color: var(--ink-4); margin-top: 0.15rem; }
+.species-card .n { margin-top: 0.7rem; font-size: 0.8rem; color: var(--accent); }
+.species-card .art { align-self: center; }
 
-/* Photographs come back at whatever aspect the source file has, so they are
-   cropped to a consistent box. Without this a tall portrait of a trout would
-   shove every card in its row out of line. */
-.fish-photo {
-  display: block;
-  object-fit: cover;
-  border-radius: 8px;
-  background: var(--paper-2);
-  border: 1px solid var(--line);
+.tag {
+  display: inline-flex;
+  align-items: center;
+  padding: 0.2rem 0.62rem;
+  border-radius: 980px;
+  font-size: 0.72rem;
+  font-weight: 500;
+  letter-spacing: 0;
+  color: var(--ink-3);
+  background: color-mix(in srgb, var(--ink) 7%, transparent);
+  white-space: nowrap;
 }
-.species-card .fish-photo { align-self: center; margin: 0.2rem 0 0.5rem; }
-.detail-head .fish-photo { border-radius: 10px; }
-/* The drawing is shown while a lookup is in flight; fading it in stops the
-   swap to a photograph from reading as a flicker. */
-.fish-art-loading { opacity: 0.85; }
-.species-card h3 { font-size: 1.05rem; }
-.species-card .sci { font-style: italic; font-size: 0.8rem; color: var(--ink-3); }
-.species-card .n { margin-top: 0.6rem; font-size: 0.8rem; font-weight: 700; color: var(--rust); }
+.tag-state { color: var(--ink-2); }
+.tag-abundant, .tag-near { color: var(--accent); background: var(--accent-soft); }
 
-/* ---------- Detail pages ---------- */
+/* ------------------------------------------------------------ detail view */
+
+.crumb {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.28rem;
+  font-size: 0.9rem;
+  color: var(--accent);
+  margin-bottom: 1.4rem;
+  background: none;
+  border: 0;
+  cursor: pointer;
+  font-family: inherit;
+  padding: 0;
+}
+.crumb:hover { text-decoration: underline; }
 
 .detail-head {
-  display: flex;
-  gap: 1.5rem;
-  align-items: flex-start;
-  flex-wrap: wrap;
-  padding: 1.35rem 1.5rem;
+  padding: 2.1rem 2.2rem;
   margin-bottom: 1.25rem;
+  display: flex;
+  gap: 2rem;
+  align-items: center;
+  flex-wrap: wrap;
 }
-.detail-head h1 { font-size: clamp(1.6rem, 3.6vw, 2.4rem); }
-.detail-head .sub { color: var(--ink-2); margin-top: 0.3rem; font-weight: 600; }
-.detail-head .lede { color: var(--ink-2); margin-top: 0.7rem; max-width: 68ch; }
+.detail-head h1 { font-size: clamp(2rem, 4.6vw, 2.9rem); letter-spacing: -0.028em; }
+.detail-head .sub { color: var(--ink-3); margin-top: 0.45rem; font-size: 0.95rem; }
+.detail-head .lede {
+  color: var(--ink-2);
+  margin-top: 0.9rem;
+  max-width: 60ch;
+  font-size: 1.02rem;
+  line-height: 1.5;
+}
 
 .stats {
   display: flex;
   flex-wrap: wrap;
-  gap: 0.5rem 1.6rem;
-  margin-top: 1rem;
-  padding-top: 0.9rem;
-  border-top: 1px dashed var(--line);
+  gap: 1.6rem;
+  margin-top: 1.5rem;
+  padding-top: 1.2rem;
+  border-top: 1px solid var(--hairline);
 }
-.stat .k {
-  font-size: 0.68rem;
-  text-transform: uppercase;
-  letter-spacing: 0.1em;
-  color: var(--ink-3);
-  font-weight: 700;
+.stat .k { font-size: 0.74rem; color: var(--ink-4); margin-bottom: 0.15rem; }
+.stat .v {
+  font-size: 1.32rem;
+  font-weight: 600;
+  letter-spacing: -0.02em;
+  font-variant-numeric: tabular-nums;
 }
-.stat .v { font-family: var(--serif); font-size: 1.12rem; font-weight: 700; }
 
-.two-col { display: grid; grid-template-columns: minmax(0, 1.55fr) minmax(0, 1fr); gap: 1.25rem; align-items: start; }
+.two-col {
+  display: grid;
+  grid-template-columns: minmax(0, 1.5fr) minmax(0, 1fr);
+  gap: 1.25rem;
+  align-items: start;
+}
 @media (max-width: 900px) { .two-col { grid-template-columns: 1fr; } }
 
-.panel { padding: 1.15rem 1.3rem; }
-.panel + .panel { margin-top: 1.1rem; }
+.panel { padding: 1.6rem 1.7rem; }
 .panel h2 {
-  font-size: 1.15rem;
-  padding-bottom: 0.55rem;
-  margin-bottom: 0.85rem;
-  border-bottom: 2px solid var(--line);
+  font-size: 1.24rem;
+  letter-spacing: -0.021em;
+  padding-bottom: 0.85rem;
+  margin-bottom: 1.1rem;
+  border-bottom: 1px solid var(--hairline);
 }
 
-.info-row + .info-row { margin-top: 0.85rem; padding-top: 0.85rem; border-top: 1px dashed var(--line); }
-.info-row .k {
-  font-size: 0.68rem;
-  text-transform: uppercase;
-  letter-spacing: 0.1em;
-  color: var(--rust);
-  font-weight: 800;
-  margin-bottom: 0.2rem;
+.info-row + .info-row {
+  margin-top: 1.1rem;
+  padding-top: 1.1rem;
+  border-top: 1px solid var(--hairline);
 }
-.info-row .v { color: var(--ink-2); font-size: 0.93rem; }
+.info-row .k { font-size: 0.78rem; color: var(--ink-4); margin-bottom: 0.25rem; }
+.info-row .v { color: var(--ink-2); font-size: 0.94rem; line-height: 1.5; }
+.facilities { display: flex; flex-wrap: wrap; gap: 0.4rem; margin-top: 0.4rem; }
 
-.facilities { display: flex; flex-wrap: wrap; gap: 0.4rem; margin-top: 0.3rem; }
-
-/* Fish list on a lake page */
-.fish-list { display: flex; flex-direction: column; gap: 0.5rem; }
+.fish-list { display: flex; flex-direction: column; gap: 0.4rem; }
 .fish-item {
   display: flex;
   align-items: center;
-  gap: 0.85rem;
-  padding: 0.6rem 0.75rem;
-  border: 1px solid var(--line);
-  border-radius: 8px;
-  background: var(--paper-2);
-  transition: background 0.14s, border-color 0.14s, transform 0.14s;
+  gap: 1rem;
+  padding: 0.7rem 0.85rem;
+  border-radius: var(--r-md);
+  color: inherit;
+  transition: background 0.18s;
 }
-.fish-item:hover { background: var(--card); border-color: var(--line-2); transform: translateX(3px); }
+.fish-item:hover { background: color-mix(in srgb, var(--ink) 5%, transparent); }
 .fish-item .art { flex: none; }
-.fish-item .nm { font-family: var(--serif); font-weight: 700; font-size: 1.02rem; }
-.fish-item .sci { font-style: italic; font-size: 0.76rem; color: var(--ink-3); }
-.fish-item .go { margin-left: auto; color: var(--ink-3); flex: none; }
+.fish-item .nm { font-weight: 500; font-size: 1rem; letter-spacing: -0.015em; }
+.fish-item .sci { font-size: 0.8rem; color: var(--ink-4); }
+.fish-item .go { margin-left: auto; color: var(--ink-4); flex: none; }
 
-/* Lake list on a species page */
-.lake-list { display: flex; flex-direction: column; gap: 0.4rem; }
+.lake-list { display: flex; flex-direction: column; gap: 0.15rem; }
 .lake-row {
   display: flex;
   align-items: baseline;
   gap: 0.6rem;
   padding: 0.55rem 0.7rem;
-  border-radius: 7px;
-  border: 1px solid transparent;
-  transition: background 0.13s, border-color 0.13s;
+  border-radius: var(--r-sm);
+  color: inherit;
+  transition: background 0.18s;
 }
-.lake-row:hover { background: var(--paper-2); border-color: var(--line); }
-.lake-row .nm { font-weight: 700; min-width: 0; }
-.lake-row .st { font-size: 0.8rem; color: var(--ink-3); white-space: nowrap; }
+.lake-row:hover { background: color-mix(in srgb, var(--ink) 5%, transparent); }
+.lake-row .nm { font-weight: 500; }
+.lake-row .st { font-size: 0.8rem; color: var(--ink-4); white-space: nowrap; }
 .lake-row .ab { margin-left: auto; }
 
-.state-group { margin-bottom: 1.4rem; }
+.state-group { margin-bottom: 1.5rem; }
 .state-group h3 {
-  font-size: 0.78rem;
-  text-transform: uppercase;
-  letter-spacing: 0.12em;
-  color: var(--rust);
-  border-bottom: 1px solid var(--line);
-  padding-bottom: 0.3rem;
+  font-size: 0.8rem;
+  font-weight: 500;
+  color: var(--ink-4);
+  letter-spacing: 0;
+  border-bottom: 1px solid var(--hairline);
+  padding-bottom: 0.4rem;
   margin-bottom: 0.5rem;
 }
 
-.lake-card .wtype { align-self: flex-start; margin-top: 0.4rem; }
+/* ------------------------------------------------------------ photographs */
 
-/* ---------- Map: pure SVG, no tiles or token ---------- */
+/* A fixed box the image is cropped into, so a tall portrait of one trout can
+   never shove a whole row of cards out of line, and so nothing reflows when
+   the photo finally arrives. */
+.fish-figure {
+  position: relative;
+  margin: 0;
+  border-radius: var(--r-md);
+  overflow: hidden;
+  background: color-mix(in srgb, var(--ink) 6%, transparent);
+  flex: none;
+}
+.fish-figure-detail { border-radius: var(--r-lg); }
+.fish-photo {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  opacity: 0;
+  transition: opacity 0.4s ease;
+}
+.fish-photo[data-loaded='true'] { opacity: 1; }
+/* The drawing stands in until a photo resolves, and stays for good on the
+   fish that have no photograph anywhere. */
+.fish-fallback {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  height: 100%;
+}
+.fish-figure-loading::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(
+    100deg,
+    transparent 20%,
+    color-mix(in srgb, var(--ink) 7%, transparent) 50%,
+    transparent 80%
+  );
+  background-size: 220% 100%;
+  animation: shimmer 1.4s linear infinite;
+}
+@keyframes shimmer { from { background-position: 140% 0; } to { background-position: -60% 0; } }
+/* Attribution for photographs that carry a licence requiring it. Small, out of
+   the way, but present — the licence is not optional. */
+.fish-credit {
+  display: block;
+  margin-top: 0.4rem;
+  font-size: 0.66rem;
+  line-height: 1.35;
+  color: var(--ink-4);
+}
+.fish-credit a { color: inherit; text-decoration: underline; text-underline-offset: 2px; }
+
+/* ------------------------------------------------------------------- map */
 
 .map-wrap {
   position: relative;
-  border-radius: var(--radius);
-  overflow: hidden;
-  border: 1px solid var(--line-2);
-  background: var(--paper-2);
+  margin-bottom: 1.75rem;
+  padding: 0.75rem;
+  background: var(--surface);
+  backdrop-filter: blur(24px) saturate(180%);
+  -webkit-backdrop-filter: blur(24px) saturate(180%);
+  border: 1px solid var(--hairline);
+  border-radius: var(--r-xl);
   box-shadow: var(--shadow);
-  margin-bottom: 1.25rem;
 }
 .usmap { display: block; width: 100%; height: auto; }
 .usmap-land path {
-  fill: var(--card);
-  stroke: none;
-  transition: fill 0.15s;
+  fill: color-mix(in srgb, var(--ink) 8%, transparent);
+  stroke: var(--hairline);
+  stroke-width: 0.6;
+  transition: fill 0.18s;
 }
-.usmap-land path:hover { fill: var(--paper-2); }
-.usmap-borders { fill: none; stroke: var(--line-2); stroke-width: 0.9; stroke-linejoin: round; }
-
-.usmap-pin { cursor: pointer; opacity: 0.9; transition: r 0.12s, opacity 0.12s; }
+.usmap-land path:hover { fill: color-mix(in srgb, var(--ink) 13%, transparent); }
+.usmap-borders { fill: none; stroke: var(--hairline-2); stroke-width: 0.8; stroke-linejoin: round; }
+.usmap-pin { cursor: pointer; opacity: 0.92; transition: r 0.12s, opacity 0.12s; }
 .usmap-pin:hover, .usmap-pin:focus-visible { opacity: 1; }
 
-/* Ochre, not blue: with every pin on the map now a shade of blue, the
-   "you are here" marker needs to sit outside that range to be found. */
-.usmap-me circle { fill: var(--rust); }
-.usmap-me-halo { fill: var(--rust); opacity: 0.25; }
+/* Amber, not blue: with every pin on the map a shade of blue, the you-are-here
+   marker has to sit outside that range to be findable. */
+.usmap-me circle { fill: #ff9f0a; }
+.usmap-me-halo { fill: #ff9f0a; opacity: 0.3; }
 @media (prefers-reduced-motion: no-preference) {
   .usmap-me-halo { animation: pulse 2.4s ease-out infinite; transform-origin: center; }
-  @keyframes pulse {
-    0% { r: 6; opacity: 0.45; }
-    100% { r: 18; opacity: 0; }
-  }
+}
+@keyframes pulse {
+  0% { transform: scale(0.6); opacity: 0.45; }
+  70% { transform: scale(1.5); opacity: 0; }
+  100% { opacity: 0; }
 }
 
 .usmap-tip {
   position: absolute;
-  transform: translate(-50%, calc(-100% - 12px));
-  background: var(--card);
-  border: 1px solid var(--line-2);
-  border-radius: 8px;
-  padding: 0.45rem 0.7rem;
+  transform: translate(-50%, calc(-100% - 14px));
+  background: var(--surface-raised);
+  backdrop-filter: blur(20px) saturate(180%);
+  -webkit-backdrop-filter: blur(20px) saturate(180%);
+  border: 1px solid var(--hairline);
+  border-radius: var(--r-md);
   box-shadow: var(--shadow-lg);
+  padding: 0.5rem 0.75rem;
   pointer-events: none;
   display: flex;
   flex-direction: column;
   white-space: nowrap;
   z-index: 5;
 }
-.usmap-tip strong { font-family: var(--serif); font-size: 0.95rem; }
-.usmap-tip span { font-size: 0.75rem; color: var(--ink-3); }
+.usmap-tip strong { font-size: 0.92rem; font-weight: 600; letter-spacing: -0.015em; }
+.usmap-tip span { font-size: 0.76rem; color: var(--ink-4); }
 
-/* ---------- Near me ---------- */
-
-.near-btn {
-  display: inline-flex;
-  align-items: center;
-  gap: 0.4rem;
-  border: 1px solid var(--line-2);
-  background: var(--card);
-  border-radius: 999px;
-  padding: 0.45rem 0.95rem;
-  font: inherit;
-  font-size: 0.88rem;
-  font-weight: 700;
-  color: var(--ink-2);
-  cursor: pointer;
-  box-shadow: var(--shadow);
+.map-pin { cursor: pointer; }
+.map-pin:hover { filter: brightness(1.1); }
+.map-missing { padding: 2rem; text-align: center; color: var(--ink-4); font-size: 0.9rem; }
+.map-missing code {
+  font-family: var(--mono);
+  font-size: 0.85em;
+  background: var(--accent-soft);
+  padding: 0.1rem 0.35rem;
+  border-radius: 5px;
 }
-.near-btn:hover:not(:disabled) { border-color: var(--forest-2); color: var(--forest); }
-.near-btn:disabled { opacity: 0.6; cursor: default; }
+.popup-name { font-size: 1rem; font-weight: 600; color: var(--ink); }
+.popup-meta { font-size: 0.78rem; color: var(--ink-4); margin-top: 0.1rem; }
+.popup-link { display: inline-block; margin-top: 0.45rem; font-size: 0.8rem; color: var(--accent); }
+
+/* ---------------------------------------------------------------- states */
 
 .notice {
-  padding: 0.7rem 1rem;
-  border-radius: var(--radius);
-  border: 1px solid var(--line-2);
-  background: var(--paper-2);
+  padding: 0.85rem 1.1rem;
+  border-radius: var(--r-md);
+  border: 1px solid var(--hairline);
+  background: var(--surface);
+  backdrop-filter: blur(20px) saturate(180%);
+  -webkit-backdrop-filter: blur(20px) saturate(180%);
   color: var(--ink-2);
-  font-size: 0.88rem;
-  margin-bottom: 1rem;
+  font-size: 0.9rem;
+  margin-bottom: 1.25rem;
 }
-.notice-ok { border-color: var(--forest-2); background: rgba(37, 109, 159, 0.1); }
-.linkish {
-  border: 0;
-  background: none;
-  padding: 0;
-  font: inherit;
-  font-weight: 700;
-  color: var(--rust);
-  cursor: pointer;
-  text-decoration: underline;
-  text-underline-offset: 3px;
+.notice-ok { border-color: var(--accent); background: var(--accent-soft); }
+
+.empty, .error { padding: 4rem 1rem; text-align: center; color: var(--ink-4); font-size: 1rem; }
+.error { color: var(--ink-2); }
+
+.spinner {
+  width: 22px;
+  height: 22px;
+  margin: 4rem auto;
+  border: 2px solid var(--hairline-2);
+  border-top-color: var(--accent);
+  border-radius: 50%;
+  animation: spin 0.7s linear infinite;
+}
+@keyframes spin { to { transform: rotate(360deg); } }
+
+/* ---------------------------------------------------------------- splash */
+
+/* The opening titles. Fixed above everything, non-interactive, and removed
+   from the tree entirely once it has played. */
+.splash {
+  position: fixed;
+  inset: 0;
+  z-index: 100;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 0;
+  background: color-mix(in srgb, var(--bg) 82%, transparent);
+  backdrop-filter: blur(28px) saturate(160%);
+  -webkit-backdrop-filter: blur(28px) saturate(160%);
+  opacity: 1;
+  transition: opacity 0.9s ease, backdrop-filter 0.9s ease;
+}
+/* The dissolve: the veil lifts and the whole title block drifts up and back,
+   so the water is revealed rather than merely uncovered. */
+.splash[data-leaving='true'] { opacity: 0; backdrop-filter: blur(0) saturate(100%); }
+.splash[data-leaving='true'] .splash-inner { transform: translateY(-14px) scale(1.04); }
+
+.splash-inner {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  padding: 0 1.5rem;
+  transition: transform 0.9s cubic-bezier(0.32, 0.72, 0, 1);
+}
+.splash-mark {
+  color: var(--ink);
+  animation: splash-mark 1.5s cubic-bezier(0.32, 0.72, 0, 1) both;
+}
+.splash-title {
+  margin-top: 1.4rem;
+  font-size: clamp(2.1rem, 7vw, 4rem);
+  font-weight: 600;
+  letter-spacing: -0.035em;
+  line-height: 1.05;
+  animation: splash-rise 1.1s cubic-bezier(0.32, 0.72, 0, 1) 0.25s both;
+}
+.splash-sub {
+  margin-top: 0.7rem;
+  font-size: clamp(0.95rem, 2.4vw, 1.2rem);
+  color: var(--ink-3);
+  animation: splash-rise 1.1s cubic-bezier(0.32, 0.72, 0, 1) 0.45s both;
+}
+.splash-hint {
+  position: absolute;
+  bottom: 2.5rem;
+  font-size: 0.74rem;
+  color: var(--ink-4);
+  animation: splash-fade 1s ease 1.4s both;
 }
 
-.wtags { display: flex; gap: 0.4rem; flex-wrap: wrap; margin-top: 0.45rem; }
-.tag-near { border-color: var(--rust); color: var(--rust); background: rgba(180, 96, 44, 0.09); }
+@keyframes splash-mark {
+  from { opacity: 0; transform: scale(0.72) translateY(16px); }
+  to { opacity: 1; transform: none; }
+}
+@keyframes splash-rise {
+  from { opacity: 0; transform: translateY(22px); }
+  to { opacity: 1; transform: none; }
+}
+@keyframes splash-fade { from { opacity: 0; } to { opacity: 1; } }
+
+/* --------------------------------------------------------- water gallery */
+
+/* The photograph and locator map at the head of a water page. */
+.water-hero {
+  display: grid;
+  grid-template-columns: minmax(0, 1.35fr) minmax(0, 1fr);
+  gap: 1rem;
+  margin-bottom: 1.25rem;
+}
+@media (max-width: 760px) { .water-hero { grid-template-columns: 1fr; } }
+
+.water-shot {
+  position: relative;
+  margin: 0;
+  aspect-ratio: 3 / 2;
+  border-radius: var(--r-xl);
+  overflow: hidden;
+  background: color-mix(in srgb, var(--ink) 6%, transparent);
+  border: 1px solid var(--hairline);
+}
+.water-shot img {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  opacity: 0;
+  transition: opacity 0.45s ease;
+}
+.water-shot img[data-loaded='true'] { opacity: 1; }
+.water-shot figcaption {
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  padding: 1.6rem 0.9rem 0.55rem;
+  font-size: 0.68rem;
+  color: #fff;
+  background: linear-gradient(to top, rgba(0, 0, 0, 0.55), transparent);
+}
+.water-shot figcaption a { color: inherit; text-decoration: underline; }
+/* No photograph exists for most small waters, so the placeholder has to look
+   deliberate rather than broken. */
+.water-shot-empty {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  padding: 1.5rem;
+  color: var(--ink-4);
+  font-size: 0.85rem;
+}
+
+.locator {
+  position: relative;
+  padding: 0.6rem;
+  border-radius: var(--r-xl);
+  border: 1px solid var(--hairline);
+  background: var(--surface);
+  backdrop-filter: blur(24px) saturate(180%);
+  -webkit-backdrop-filter: blur(24px) saturate(180%);
+}
+.locator svg { display: block; width: 100%; height: auto; }
+.locator-land path { fill: color-mix(in srgb, var(--ink) 8%, transparent); stroke: var(--hairline); stroke-width: 0.6; }
+.locator-home { fill: color-mix(in srgb, var(--ink) 20%, transparent); stroke: var(--accent); stroke-width: 1.2; }
+.locator-borders { fill: none; stroke: var(--hairline-2); stroke-width: 0.7; }
+.locator-dot { fill: var(--accent); }
+.locator-ring { fill: none; stroke: var(--accent); stroke-width: 1.6; opacity: 0.5; }
+@media (prefers-reduced-motion: no-preference) {
+  .locator-ring { animation: pulse 2.6s ease-out infinite; transform-box: fill-box; transform-origin: center; }
+}
+.locator-label {
+  margin-top: 0.5rem;
+  text-align: center;
+  font-size: 0.76rem;
+  color: var(--ink-4);
+}
+
+/* ------------------------------------------------------- species as list */
+
+/* The same data as the grid, denser: one row per fish, scannable by name and
+   sortable by eye rather than by hunting through a mosaic of pictures. */
+.species-rows { padding: 0.4rem; }
+.species-row {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  padding: 0.55rem 0.7rem;
+  border-radius: var(--r-md);
+  color: inherit;
+  transition: background 0.18s;
+}
+.species-row + .species-row { border-top: 1px solid var(--hairline); border-radius: 0; }
+.species-row:hover { background: color-mix(in srgb, var(--ink) 5%, transparent); }
+.species-row-name { display: flex; flex-direction: column; min-width: 0; flex: 1; }
+.species-row-name .nm { font-weight: 500; letter-spacing: -0.015em; }
+.species-row-name .sci { font-size: 0.8rem; color: var(--ink-4); }
+.species-row-group { font-size: 0.82rem; color: var(--ink-3); white-space: nowrap; }
+.species-row-count {
+  font-size: 0.82rem;
+  color: var(--accent);
+  white-space: nowrap;
+  font-variant-numeric: tabular-nums;
+  min-width: 6.5rem;
+  text-align: right;
+}
+.species-row .go { color: var(--ink-4); flex: none; }
+@media (max-width: 620px) {
+  .species-row-group { display: none; }
+  .species-row-count { min-width: 0; }
+}
+
+/* ---------------------------------------------------------- layout switch */
+
+.layout-toggle {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.15rem;
+  padding: 2px 2px 2px 0.6rem;
+  border-radius: 980px;
+  background: var(--accent-soft);
+}
+.layout-toggle button {
+  padding: 0.34rem 0.85rem;
+  border: 0;
+  border-radius: 980px;
+  background: transparent;
+  color: var(--ink-2);
+  font: inherit;
+  font-size: 0.86rem;
+  cursor: pointer;
+  transition: background 0.22s, color 0.22s, transform 0.22s;
+}
+.layout-toggle button:hover { color: var(--ink); }
+.layout-toggle button[aria-pressed='true'] {
+  background: var(--surface-raised);
+  color: var(--ink);
+  box-shadow: var(--shadow);
+}
+.layout-toggle button:active { transform: scale(0.95); }
+
+.layout-icon { display: block; flex: none; overflow: visible; }
+.layout-icon rect {
+  fill: var(--accent);
+  transform-box: fill-box;
+  transform-origin: top left;
+  /* Overshoots slightly on the way in, which is what makes the squares feel
+     like objects being moved rather than values being interpolated. */
+  transition: transform 0.55s cubic-bezier(0.34, 1.4, 0.5, 1);
+}
+/* Two names, one effect: switching between them is what restarts the flare. */
+.layout-icon[data-layout='grid'] { animation: layout-flare-a 0.75s ease-out; }
+.layout-icon[data-layout='list'] { animation: layout-flare-b 0.75s ease-out; }
+
+@keyframes layout-flare-a {
+  0% { filter: none; }
+  35% { filter: drop-shadow(0 0 7px var(--accent)) brightness(1.5); }
+  100% { filter: none; }
+}
+@keyframes layout-flare-b {
+  0% { filter: none; }
+  35% { filter: drop-shadow(0 0 7px var(--accent)) brightness(1.5); }
+  100% { filter: none; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .layout-icon rect { transition: none; }
+  .layout-icon { animation: none; }
+}

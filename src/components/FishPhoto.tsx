@@ -1,79 +1,19 @@
 import { useEffect, useState } from 'react';
 import { FishIllustration } from './FishIllustration';
-
-/**
- * A real photograph of the fish, with the drawing as the fallback.
- *
- * Photographs are not stored in the database. They are looked up in the
- * visitor's browser from Wikipedia's REST summary endpoint, which serves the
- * lead image of an article and sends `Access-Control-Allow-Origin: *`, so it
- * can be called directly from the page without a proxy or an API key.
- *
- * Scientific name is tried first because it is unambiguous and redirects to the
- * article; the common name is the second attempt. Hybrids and a handful of
- * regional fish have no article at all, and those keep the hand-drawn plate,
- * which is why the drawings stay in the build rather than being deleted.
- *
- * Every answer, including "there is no photo", is cached in localStorage, so a
- * species costs at most one request per browser and the grid does not re-fetch
- * on every render.
- */
-
-const CACHE_PREFIX = 'llf.photo.';
-/** Long enough that the lookup is effectively one-time, short enough to heal. */
-const CACHE_DAYS = 30;
-
-type Cached = { url: string | null; at: number };
-
-function readCache(slug: string): Cached | null {
-  try {
-    const raw = localStorage.getItem(CACHE_PREFIX + slug);
-    if (!raw) return null;
-    const v = JSON.parse(raw) as Cached;
-    if (Date.now() - v.at > CACHE_DAYS * 864e5) return null;
-    return v;
-  } catch {
-    return null;
-  }
-}
-
-function writeCache(slug: string, url: string | null) {
-  try {
-    localStorage.setItem(CACHE_PREFIX + slug, JSON.stringify({ url, at: Date.now() }));
-  } catch {
-    // Storage full or blocked: the lookup just repeats next visit.
-  }
-}
-
-/** Asks Wikipedia for one title. Resolves to an image URL, or null. */
-async function lookup(title: string, signal: AbortSignal): Promise<string | null> {
-  const url =
-    'https://en.wikipedia.org/api/rest_v1/page/summary/' +
-    encodeURIComponent(title.replace(/ /g, '_'));
-  const res = await fetch(url, { signal, headers: { Accept: 'application/json' } });
-  if (!res.ok) return null;
-  const json = (await res.json()) as {
-    type?: string;
-    thumbnail?: { source?: string };
-    originalimage?: { source?: string; width?: number };
-  };
-  // Disambiguation pages carry a generic icon rather than a photo of a fish.
-  if (json.type === 'disambiguation') return null;
-  const thumb = json.thumbnail?.source;
-  if (!thumb) return null;
-  // The thumbnail URL encodes its own width; ask for a larger render of the
-  // same file so the detail page is not upscaling a 320px crop.
-  return thumb.replace(/\/(\d+)px-/, (m, w) => (Number(w) < 640 ? '/640px-' : m));
-}
+import { cachedPhoto, findPhoto, forgetPhoto, type Photo } from '../lib/photos';
 
 type Props = {
   slug: string;
   commonName: string;
   scientificName?: string | null;
   illustration: string | null | undefined;
-  /** Rendered width in pixels. The drawing keeps its 2:1 box; photos are 3:2. */
+  /** Rendered width in CSS pixels. The box is 3:2. */
   size?: number;
   className?: string;
+  /** The one photo above the fold on a detail page loads eagerly. */
+  priority?: boolean;
+  /** Credit is shown on the detail page, where there is room for it. */
+  showCredit?: boolean;
 };
 
 export function FishPhoto({
@@ -83,77 +23,92 @@ export function FishPhoto({
   illustration,
   size = 120,
   className,
+  priority = false,
+  showCredit = false,
 }: Props) {
-  const cached = readCache(slug);
-  const [url, setUrl] = useState<string | null>(cached?.url ?? null);
-  const [settled, setSettled] = useState(cached != null);
+  // A cached answer is used on the first render, so a revisit paints the photo
+  // immediately instead of flashing the drawing.
+  const seeded = cachedPhoto(slug);
+  const [photo, setPhoto] = useState<Photo | null>(seeded ?? null);
+  const [settled, setSettled] = useState(seeded !== undefined);
+  const [loaded, setLoaded] = useState(false);
+
+  const height = Math.round((size * 2) / 3);
 
   useEffect(() => {
-    if (readCache(slug) != null) return;
+    if (cachedPhoto(slug) !== undefined) return;
     const ctrl = new AbortController();
     let live = true;
 
-    (async () => {
-      // Wikipedia titles articles in sentence case ("Largemouth bass"), and
-      // only the first letter is case-insensitive, so the stored title-cased
-      // name has to be lowered before it will resolve.
-      const sentence = commonName.charAt(0).toUpperCase() + commonName.slice(1).toLowerCase();
-      const titles = [...new Set([scientificName, sentence, commonName].filter(Boolean))] as string[];
-      for (const t of titles) {
-        try {
-          const found = await lookup(t, ctrl.signal);
-          if (!live) return;
-          if (found) {
-            writeCache(slug, found);
-            setUrl(found);
-            setSettled(true);
-            return;
-          }
-        } catch {
-          if (ctrl.signal.aborted) return;
-          // Offline or blocked: fall through to the drawing without caching a
-          // miss, so a later visit on a working connection tries again.
-          if (!live) return;
-          setSettled(true);
-          return;
-        }
-      }
-      if (!live) return;
-      writeCache(slug, null);
-      setSettled(true);
-    })();
+    // Ask for roughly twice the drawn width so the image is sharp on a retina
+    // screen without pulling a full-resolution original into a small card.
+    const want = Math.min(1024, Math.max(320, Math.round(size * 2)));
+
+    findPhoto({ slug, commonName, scientificName, want }, ctrl.signal)
+      .then((found) => {
+        if (!live) return;
+        setPhoto(found);
+        setSettled(true);
+      })
+      .catch(() => {
+        // Offline or blocked. Not cached, so a later visit tries again.
+        if (live && !ctrl.signal.aborted) setSettled(true);
+      });
 
     return () => {
       live = false;
       ctrl.abort();
     };
-  }, [slug, commonName, scientificName]);
+  }, [slug, commonName, scientificName, size]);
 
-  if (url) {
-    return (
-      <img
-        src={url}
-        alt={`Photograph of a ${commonName.toLowerCase()}`}
-        className={['fish-photo', className].filter(Boolean).join(' ')}
-        width={size}
-        height={Math.round((size * 2) / 3)}
-        loading="lazy"
-        decoding="async"
-        // A dead or moved file falls back to the drawing rather than a broken
-        // image icon, and clears the cache entry that pointed at it.
-        onError={() => {
-          writeCache(slug, null);
-          setUrl(null);
-        }}
-      />
-    );
-  }
+  const figureClass = [
+    'fish-figure',
+    showCredit ? 'fish-figure-detail' : null,
+    !settled ? 'fish-figure-loading' : null,
+    className,
+  ]
+    .filter(Boolean)
+    .join(' ');
 
   return (
-    <FishIllustration
-      illustration={illustration}
-      size={size}
-      className={[className, settled ? undefined : 'fish-art-loading'].filter(Boolean).join(' ')}
-    />
+    <div>
+      <figure className={figureClass} style={{ width: size, height }}>
+        {photo ? (
+          <img
+            src={photo.url}
+            alt={`Photograph of a ${commonName.toLowerCase()}`}
+            className="fish-photo"
+            data-loaded={loaded}
+            width={size}
+            height={height}
+            loading={priority ? 'eager' : 'lazy'}
+            decoding="async"
+            fetchPriority={priority ? 'high' : 'low'}
+            onLoad={() => setLoaded(true)}
+            // A moved or deleted file falls back to the drawing rather than a
+            // broken image, and drops the cache entry that pointed at it.
+            onError={() => {
+              forgetPhoto(slug);
+              setPhoto(null);
+            }}
+          />
+        ) : (
+          <span className="fish-fallback">
+            <FishIllustration illustration={illustration} size={Math.round(size * 0.86)} />
+          </span>
+        )}
+      </figure>
+
+      {showCredit && photo && (photo.artist || photo.license) && (
+        <small className="fish-credit">
+          Photo:{' '}
+          <a href={photo.pageUrl} target="_blank" rel="noopener noreferrer">
+            Wikipedia
+          </a>
+          {photo.artist ? ` · ${photo.artist}` : ''}
+          {photo.license ? ` · ${photo.license}` : ''}
+        </small>
+      )}
+    </div>
   );
 }
