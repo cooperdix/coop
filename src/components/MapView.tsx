@@ -22,17 +22,23 @@ const projection = geoAlbersUsa()
   .translate(PROJECTION.translate as [number, number])
   .scale(PROJECTION.scale);
 
-/** Colour by water type so the map reads as a guide, not just dots. */
+/**
+ * Colour by water type so the map reads as a guide, not just dots.
+ *
+ * These are mid-tone blues on purpose: the land beneath them is a pale wash in
+ * the light theme and a near-black in the dark one, and a mid tone is the only
+ * range that stays legible on both without needing a second palette.
+ */
 const TYPE_COLOR: Record<string, string> = {
-  River: '#3d626c',
-  Creek: '#3d626c',
-  Tailwater: '#2c4a52',
-  Bay: '#4a7c8c',
-  Sound: '#4a7c8c',
-  Estuary: '#4a7c8c',
-  Lagoon: '#4a7c8c',
+  River: '#4fb3c9',
+  Creek: '#4fb3c9',
+  Tailwater: '#3f9bbd',
+  Bay: '#79c8dc',
+  Sound: '#79c8dc',
+  Estuary: '#79c8dc',
+  Lagoon: '#79c8dc',
 };
-const DEFAULT_COLOR = '#a0522d';
+const DEFAULT_COLOR = '#2f86c4';
 const colorFor = (t: string) => TYPE_COLOR[t] ?? DEFAULT_COLOR;
 
 export function MapView({ waters, onSelect, here }: Props) {

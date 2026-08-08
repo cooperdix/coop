@@ -327,6 +327,28 @@ const SHAPES: Record<string, Shape> = {
     eye: [30, 42],
     tone: '#8a7f3e',
   },
+  // Flounder and halibut: drawn from above, both eyes on the upper side.
+  flatfish: {
+    body: 'M20,50c14-24 40-36 72-36s58,12 72,36c-14,24-40,36-72,36s-58-12-72-36z',
+    tail: 'M164,50l24-14-5,14 5,14z',
+    dorsal: 'M28,34c22-16 46-24 72-24l-2,8c-24,0-46,7-66,20z',
+    anal: 'M28,66c22,16 46,24 72,24l-2-8c-24,0-46-7-66-20z',
+    pect: 'M96,50c8,4 12,10 12,17-8-3-13-9-15-16z',
+    extra: 'M44,42a5,5 0 1,0 0.1,0M60,58a5,5 0 1,0 0.1,0M84,38a5,5 0 1,0 0.1,0M104,62a5,5 0 1,0 0.1,0M126,44a5,5 0 1,0 0.1,0',
+    eye: [30, 44],
+    tone: '#7a6b57',
+  },
+  // Mackerel and the other fast, forked-tail coastal fish.
+  mackerel: {
+    body: 'M22,50c22-16 54-24 90-24s58,6 68,14l6,10-6,10c-10,8-32,14-68,14s-68-8-90-24z',
+    tail: 'M180,50l26-22-8,22 8,22z',
+    dorsal: 'M78,30l6-14 18,8 14,8z',
+    anal: 'M96,70l6,14 18-8 12-8z',
+    pect: 'M62,58c11,3 18,10 20,17-12-2-20-8-25-15z',
+    extra: 'M52,36l6,10M70,32l6,12M90,30l6,14M112,32l6,12M134,36l6,10',
+    eye: [36, 44],
+    tone: '#4c6f88',
+  },
 };
 
 /** Maps an illustration key from the database onto a drawn body plan. */
@@ -360,6 +382,8 @@ const KEY_TO_SHAPE: Record<string, keyof typeof SHAPES> = {
   paddlefish: 'paddlefish',
   tilapia: 'tilapia',
   peacock: 'peacock',
+  flatfish: 'flatfish',
+  mackerel: 'mackerel',
 };
 
 type Props = {

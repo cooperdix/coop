@@ -58,10 +58,10 @@ export const BrandMark = ({ size = 34, className }: P) => (
     <circle cx="24" cy="24" r="22" fill="rgba(255,255,255,0.10)" />
     <path
       d="M8 25c4-6 11-9 18-9 6 0 11 2 14 5l4 1-4 1c-3 3-8 5-14 5-7 0-14-3-18-3Z"
-      fill="#e8dfc2"
+      fill="#dcecf8"
     />
-    <path d="M40 22l6-5-1 5 1 5Z" fill="#e8dfc2" opacity="0.8" />
-    <path d="M22 16l2-5 4 4 3-4 3 5Z" fill="#e8dfc2" opacity="0.75" />
-    <circle cx="15" cy="23" r="1.9" fill="#2f4530" />
+    <path d="M40 22l6-5-1 5 1 5Z" fill="#dcecf8" opacity="0.8" />
+    <path d="M22 16l2-5 4 4 3-4 3 5Z" fill="#dcecf8" opacity="0.75" />
+    <circle cx="15" cy="23" r="1.9" fill="#0d3050" />
   </svg>
 );
